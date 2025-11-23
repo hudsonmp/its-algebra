@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Problem Session Database Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .problem-selector {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .problem-selector h2 {
+            color: #4ec9b0;
+            margin-bottom: 15px;
+        }
+        
+        .selector-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .selector-controls label {
+            color: #858585;
+            font-weight: bold;
+        }
+        
+        .selector-controls select {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: 2px solid #3e3e42;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 1em;
+            min-width: 300px;
+            cursor: pointer;
+        }
+        
+        .selector-controls select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .selector-controls select option {
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .load-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .load-btn:hover {
+            background: #764ba2;
+        }
+        
+        .problem-info {
+            background: #252526;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 3px solid #4ec9b0;
+        }
+        
+        .problem-info-item {
+            margin: 5px 0;
+            color: #858585;
+        }
+        
+        .problem-info-value {
+            color: #4ec9b0;
+            font-weight: bold;
+        }
+        
+        .summary {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .summary h2 {
+            color: #4ec9b0;
+            margin-bottom: 15px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .summary-item {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .summary-label {
+            color: #858585;
+            font-size: 0.9em;
+        }
+        
+        .summary-value {
+            color: #4ec9b0;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+        
+        .section {
+            background: #252526;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #4ec9b0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3e3e42;
+            padding-bottom: 10px;
+        }
+        
+        .node {
+            background: #1e1e1e;
+            border: 2px solid #3e3e42;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .node-header {
+            color: #569cd6;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .node-type {
+            color: #ce9178;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        
+        .property {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .property-key {
+            color: #9cdcfe;
+        }
+        
+        .property-value {
+            color: #ce9178;
+        }
+        
+        .property-null {
+            color: #858585;
+            font-style: italic;
+        }
+        
+        .transaction {
+            background: #1e1e1e;
+            border-left: 4px solid #4ec9b0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+        
+        .transaction:hover {
+            background: #2d2d30;
+            border-left-color: #569cd6;
+        }
+        
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .transaction-id {
+            color: #569cd6;
+            font-weight: bold;
+        }
+        
+        .transaction-time {
+            color: #858585;
+            font-size: 0.9em;
+        }
+        
+        .transaction-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+        
+        .type-attempt {
+            background: #264f78;
+            color: #4ec9b0;
+        }
+        
+        .type-hint {
+            background: #7a5f00;
+            color: #dcdcaa;
+        }
+        
+        .outcome-correct {
+            color: #6a9955;
+        }
+        
+        .outcome-incorrect {
+            color: #f48771;
+        }
+        
+        .outcome-ungraded {
+            color: #858585;
+        }
+        
+        .equation-display {
+            background: #1e1e1e;
+            border: 2px solid #4ec9b0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.5em;
+            color: #4ec9b0;
+            font-weight: bold;
+        }
+        
+        .equation-display .step-action {
+            font-size: 0.7em;
+            color: #858585;
+            margin-top: 10px;
+        }
+        
+        .helix-schema {
+            background: #1e1e1e;
+            border: 2px solid #ce9178;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .helix-schema h3 {
+            color: #ce9178;
+            margin-bottom: 15px;
+        }
+        
+        .schema-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+        
+        .keyword {
+            color: #569cd6;
+        }
+        
+        .type-name {
+            color: #4ec9b0;
+        }
+        
+        .field-name {
+            color: #9cdcfe;
+        }
+        
+        .field-type {
+            color: #ce9178;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #858585;
+            font-size: 1.2em;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Problem Session Database Model</h1>
+            <p>Select a problem to view its database structure and student interactions</p>
+        </div>
+        
+        <div class="problem-selector">
+            <h2>Select Problem</h2>
+            <div class="selector-controls">
+                <label for="problemSelect">Choose a problem:</label>
+                <select id="problemSelect">
+                    <option value="">-- Select a problem --</option>
+
+                    <option value="0" data-problem="9u+7_9" data-student="Stu_f9f2c0c37bb8bd875132bf5ff317764d" data-session="Lefca2379-b33a-4795-8c3b-04f9765a7cd3">
+                        9u+7_9 (34 transactions)
+                    </option>
+
+                    <option value="1" data-problem="10_-6-4y" data-student="Stu_1b1da23adab1b4b608a4d23376d5de10" data-session="Ldaf4bbbc-27cd-41f4-a80a-ff8f818858e2">
+                        10_-6-4y (29 transactions)
+                    </option>
+
+                    <option value="2" data-problem="10_-6-4y" data-student="Stu_76428497ce27de32caf2d5e757eee9e3" data-session="Lede56679-a74b-4aa5-9706-7f55679de3d4">
+                        10_-6-4y (27 transactions)
+                    </option>
+
+                    <option value="3" data-problem="5w+7_w+5" data-student="Stu_764d498f0b6e3a387b4a5eeff1013d93" data-session="L2b792c33-c06c-46f7-bf8d-ca1139417dca">
+                        5w+7_w+5 (26 transactions)
+                    </option>
+
+                    <option value="4" data-problem="3x-6_x+2" data-student="Stu_1b1da23adab1b4b608a4d23376d5de10" data-session="L5eb6175d-746c-42b0-9c89-e8fe5af92793">
+                        3x-6_x+2 (23 transactions)
+                    </option>
+
+                    <option value="5" data-problem="6-4x_-3-x" data-student="Stu_764d498f0b6e3a387b4a5eeff1013d93" data-session="L2b792c33-c06c-46f7-bf8d-ca1139417dca">
+                        6-4x_-3-x (23 transactions)
+                    </option>
+
+                    <option value="6" data-problem="3x-6_x+2" data-student="Stu_be39f8a5ee7ec4c6668ab70769618564" data-session="L8f0695e7-2e9a-4f1e-ae81-6e21f20f58d8">
+                        3x-6_x+2 (22 transactions)
+                    </option>
+
+                    <option value="7" data-problem="START" data-student="Stu_c344f2d0185b7ff984c2818e8da74697" data-session="Lb50f960f-1aa8-40a5-90ee-7be3f6204a3e">
+                        START (78 transactions)
+                    </option>
+
+                    <option value="8" data-problem="START" data-student="Stu_2c11e600e9632ecc00bda02601ab90a6" data-session="Lf335837f-e938-43b4-9199-4d1b1b74e965">
+                        START (75 transactions)
+                    </option>
+
+                    <option value="9" data-problem="START" data-student="Stu_f9f2c0c37bb8bd875132bf5ff317764d" data-session="Lefca2379-b33a-4795-8c3b-04f9765a7cd3">
+                        START (51 transactions)
+                    </option>
+
+                </select>
+                <button class="load-btn" onclick="loadProblem()">Load Problem</button>
+            </div>
+            <div id="problemInfo" class="problem-info hidden">
+                <div class="problem-info-item">
+                    <span>Knowledge Component:</span> 
+                    <span class="problem-info-value" id="infoKC">-</span>
+                </div>
+                <div class="problem-info-item">
+                    <span>Transactions:</span> 
+                    <span class="problem-info-value" id="infoTx">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="contentArea" class="hidden">
+            <div class="summary" id="summarySection">
+                <!-- Summary will be inserted here -->
+            </div>
+            
+            <div class="section" id="nodesSection">
+                <h2>📦 Database Nodes (Entities)</h2>
+                <div id="nodesContent">
+                    <!-- Nodes will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="section" id="transactionsSection">
+                <h2>🔗 Transactions (Edges)</h2>
+                <p style="color: #858585; margin-bottom: 20px;">
+                    Each transaction represents a student interaction. Click to see the problem state.
+                </p>
+                <div id="transactionsContent">
+                    <!-- Transactions will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="section" id="schemaSection">
+                <h2>🗄️ Proposed Helix Schema</h2>
+                <div class="helix-schema">
+                    <h3>Node Types</h3>
+                    <div class="schema-code">
+<span class="keyword">N</span>::<span class="type-name">Student</span> {{
+    <span class="field-name">StudentId</span>: <span class="field-type">String</span>,
+    <span class="field-name">School</span>: <span class="field-type">String</span>,
+    <span class="field-name">Class</span>: <span class="field-type">String</span>,
+}}
+
+<span class="keyword">N</span>::<span class="type-name">Session</span> {{
+    <span class="field-name">SessionId</span>: <span class="field-type">String</span>,
+    <span class="field-name">StartTime</span>: <span class="field-type">String</span>,
+    <span class="field-name">Timezone</span>: <span class="field-type">String</span>,
+}}
+
+<span class="keyword">N</span>::<span class="type-name">Problem</span> {{
+    <span class="field-name">ProblemName</span>: <span class="field-type">String</span>,
+    <span class="field-name">KCProblem</span>: <span class="field-type">String</span>,
+    <span class="field-name">KCCategory</span>: <span class="field-type">String</span>,
+    <span class="field-name">Course</span>: <span class="field-type">String</span>,
+}}
+
+<span class="keyword">N</span>::<span class="type-name">Step</span> {{
+    <span class="field-name">StepName</span>: <span class="field-type">String</span>,
+    <span class="field-name">StepType</span>: <span class="field-type">String</span>,
+}}
+                    </div>
+                    
+                    <h3>Edge Types</h3>
+                    <div class="schema-code">
+<span class="keyword">E</span>::<span class="type-name">BelongsTo</span> {{
+    <span class="field-name">From</span>: <span class="type-name">Student</span>,
+    <span class="field-name">To</span>: <span class="type-name">Session</span>,
+}}
+
+<span class="keyword">E</span>::<span class="type-name">WorksOn</span> {{
+    <span class="field-name">From</span>: <span class="type-name">Session</span>,
+    <span class="field-name">To</span>: <span class="type-name">Problem</span>,
+    <span class="field-name">Properties</span>: {{
+        <span class="field-name">StartTime</span>: <span class="field-type">String</span>,
+    }}
+}}
+
+<span class="keyword">E</span>::<span class="type-name">Transaction</span> {{
+    <span class="field-name">From</span>: <span class="type-name">Student</span>,
+    <span class="field-name">To</span>: <span class="type-name">Problem</span>,
+    <span class="field-name">Properties</span>: {{
+        <span class="field-name">TransactionId</span>: <span class="field-type">String</span>,
+        <span class="field-name">Time</span>: <span class="field-type">String</span>,
+        <span class="field-name">DurationSec</span>: <span class="field-type">I64</span>,
+        <span class="field-name">ResponseType</span>: <span class="field-type">String</span>,
+        <span class="field-name">Outcome</span>: <span class="field-type">String</span>,
+        <span class="field-name">AttemptNumber</span>: <span class="field-type">I64</span>,
+        <span class="field-name">StepName</span>: <span class="field-type">String</span>,
+        <span class="field-name">StepAction</span>: <span class="field-type">String</span>,
+        <span class="field-name">Input</span>: <span class="field-type">String</span>,
+        <span class="field-name">Action</span>: <span class="field-type">String</span>,
+        <span class="field-name">ActionType</span>: <span class="field-type">String</span>,
+        <span class="field-name">Feedback</span>: <span class="field-type">String</span>,
+        <span class="field-name">KCStep</span>: <span class="field-type">String</span>,
+        <span class="field-name">KCCategory</span>: <span class="field-type">String</span>,
+    }}
+}}
+
+<span class="keyword">E</span>::<span class="type-name">Performs</span> {{
+    <span class="field-name">From</span>: <span class="type-name">Transaction</span>,
+    <span class="field-name">To</span>: <span class="type-name">Step</span>,
+}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loadingArea" class="loading hidden">
+            Loading problem data...
+        </div>
+    </div>
+    
+    <script>
+        const problems = {problems_json};
+        const allModels = {models_json_str};
+        let currentModel = null;
+        
+        function loadProblem() {{
+            const select = document.getElementById('problemSelect');
+            const option = select.options[select.selectedIndex];
+            
+            if (!option.value) {{
+                alert('Please select a problem first!');
+                return;
+            }}
+            
+            const problemIdx = parseInt(option.value);
+            const problem = problems[problemIdx];
+            
+            // Show loading briefly
+            document.getElementById('contentArea').classList.add('hidden');
+            document.getElementById('loadingArea').classList.remove('hidden');
+            document.getElementById('problemInfo').classList.remove('hidden');
+            
+            // Update problem info
+            document.getElementById('infoKC').textContent = problem.kc_problem || 'N/A';
+            document.getElementById('infoTx').textContent = problem.transaction_count;
+            
+            // Create key for model lookup
+            const modelKey = `${{problem.problem_name}}_${{problem.student_id}}_${{problem.session_id}}`;
+            
+            // Load the model from pre-loaded data
+            setTimeout(() => {{
+                const model = allModels[modelKey];
+                if (model) {{
+                    displayModel(model);
+                }} else {{
+                    alert('Model data not found for this problem. Please regenerate the HTML file.');
+                    document.getElementById('loadingArea').classList.add('hidden');
+                }}
+            }}, 100);
+        }}
+        
+        function displayModel(model) {{
+            if (!model) return;
+            
+            document.getElementById('loadingArea').classList.add('hidden');
+            document.getElementById('contentArea').classList.remove('hidden');
+            
+            // Display summary
+            const summary = model.summary;
+            document.getElementById('summarySection').innerHTML = `
+                <h2>Session Summary</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Student ID</div>
+                        <div class="summary-value">${{summary.student_id}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Session ID</div>
+                        <div class="summary-value">${{summary.session_id.substring(0, 30)}}...</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Problem</div>
+                        <div class="summary-value">${{summary.problem_name}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Transactions</div>
+                        <div class="summary-value">${{summary.total_transactions}}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Unique Steps</div>
+                        <div class="summary-value">${{summary.unique_steps}}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Display nodes
+            const nodesContent = document.getElementById('nodesContent');
+            nodesContent.innerHTML = '';
+            for (const [nodeId, nodeData] of Object.entries(model.nodes)) {{
+                const nodeType = nodeId.split('_')[0];
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node';
+                nodeDiv.innerHTML = `
+                    <div class="node-header">
+                        ${{nodeId}}
+                        <span class="node-type">(${{nodeType}})</span>
+                    </div>
+                `;
+                
+                for (const [key, value] of Object.entries(nodeData.properties)) {{
+                    const propDiv = document.createElement('div');
+                    propDiv.className = 'property';
+                    if (value !== null && value !== undefined) {{
+                        propDiv.innerHTML = `
+                            <span class="property-key">${{key}}:</span> 
+                            <span class="property-value">"${{value}}"</span>
+                        `;
+                    }} else {{
+                        propDiv.innerHTML = `
+                            <span class="property-key">${{key}}:</span> 
+                            <span class="property-null">null</span>
+                        `;
+                    }}
+                    nodeDiv.appendChild(propDiv);
+                }}
+                
+                nodesContent.appendChild(nodeDiv);
+            }}
+            
+            // Display transactions
+            const transactionsContent = document.getElementById('transactionsContent');
+            transactionsContent.innerHTML = '';
+            let currentEquation = null;
+            
+            model.transactions.forEach((tx, idx) => {{
+                const responseType = tx.properties.response_type;
+                const outcome = tx.properties.outcome;
+                const stepEq = tx.properties.step_name;
+                
+                const typeClass = responseType && responseType.includes('ATTEMPT') ? 'type-attempt' : 'type-hint';
+                const outcomeClass = outcome ? `outcome-${{outcome.toLowerCase()}}` : '';
+                
+                // Show equation when it changes
+                if (stepEq && stepEq !== currentEquation) {{
+                    currentEquation = stepEq;
+                    const eqDiv = document.createElement('div');
+                    eqDiv.className = 'equation-display';
+                    eqDiv.innerHTML = `
+                        ${{stepEq}}
+                        ${{tx.properties.step_action ? `<div class="step-action">Action: ${{tx.properties.step_action}}</div>` : ''}}
+                    `;
+                    transactionsContent.appendChild(eqDiv);
+                }}
+                
+                const txDiv = document.createElement('div');
+                txDiv.className = 'transaction';
+                txDiv.innerHTML = `
+                    <div class="transaction-header">
+                        <div>
+                            <span class="transaction-id">#${{idx + 1}} ${{tx.transaction_id.substring(0, 20)}}...</span>
+                            <span class="transaction-type ${{typeClass}}">${{responseType || 'N/A'}}</span>
+                            ${{outcome ? `<span class="transaction-type ${{outcomeClass}}">${{outcome}}</span>` : ''}}
+                        </div>
+                        <span class="transaction-time">${{tx.properties.time}}</span>
+                    </div>
+                `;
+                
+                const keyProps = ['attempt_number', 'input', 'action', 'feedback', 'kc_step'];
+                keyProps.forEach(prop => {{
+                    const value = tx.properties[prop];
+                    if (value !== null && value !== undefined) {{
+                        const propDiv = document.createElement('div');
+                        propDiv.className = 'property';
+                        propDiv.innerHTML = `
+                            <span class="property-key">${{prop}}:</span> 
+                            <span class="property-value">"${{String(value).substring(0, 80)}}"</span>
+                        `;
+                        txDiv.appendChild(propDiv);
+                    }}
+                }});
+                
+                transactionsContent.appendChild(txDiv);
+            }});
+        }}
+        
+        // Auto-load first problem on page load if available
+        window.addEventListener('DOMContentLoaded', () => {{
+            if (problems.length > 0) {{
+                // Show first problem info
+                const firstProb = problems[0];
+                document.getElementById('infoKC').textContent = firstProb.kc_problem || 'N/A';
+                document.getElementById('infoTx').textContent = firstProb.transaction_count;
+            }}
+        }});
+    </script>
+</body>
+</html>

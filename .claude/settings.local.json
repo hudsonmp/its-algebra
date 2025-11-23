@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(bash)",
+      "Bash(helix install:*)",
+      "Bash(/Users/hudsonmitchell-pullman/.local/bin/helix install:*)",
+      "Bash(/Users/hudsonmitchell-pullman/.local/bin/helix:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
