@@ -1,0 +1,44 @@
+name: its-algebra
+options:
+  bundleIdPrefix: com.itsalgebra
+  deploymentTarget:
+    iOS: "14.0"
+  developmentLanguage: en
+  xcodeVersion: "14.0"
+targets:
+  its-algebra:
+    type: application
+    platform: iOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: .
+        excludes:
+          - "*.md"
+          - "*.html"
+          - "*.pdf"
+          - "*.py"
+          - "*.bat"
+          - "*.ps1"
+          - "*.toml"
+          - "*.sh"
+          - "*.yml"
+          - "db/**"
+          - ".claude/**"
+          - ".git/**"
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.itsalgebra.app
+      TARGETED_DEVICE_FAMILY: "2"  # iPad only
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown"
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: ""
+      SWIFT_VERSION: "5.0"
+      GENERATE_INFOPLIST_FILE: YES
+      ENABLE_PREVIEWS: YES
+    info:
+      path: Info.plist
+      properties:
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+
