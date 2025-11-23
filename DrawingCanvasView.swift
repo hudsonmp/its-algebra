@@ -9,6 +9,12 @@ import SwiftUI
 import PencilKit
 import UIKit
 
+// Notification names for MyScript recognition updates
+extension Notification.Name {
+    static let myScriptRecognitionUpdate = Notification.Name("myScriptRecognitionUpdate")
+    static let myScriptProcessingStarted = Notification.Name("myScriptProcessingStarted")
+}
+
 struct DrawingCanvasView: View {
     @State private var studentCanvasDrawing = PKDrawing()
     @State private var testCanvasDrawing = PKDrawing()
@@ -16,6 +22,7 @@ struct DrawingCanvasView: View {
     @State private var zoomScale: CGFloat = 1.0
     @State private var studentCanvasUndoManager: UndoManager?
     @State private var recognizedText: String = ""
+    @State private var latexOutput: String = ""
     @State private var isMyScriptInitialized = false
     
     var body: some View {
@@ -44,15 +51,16 @@ struct DrawingCanvasView: View {
                         selectedTool: $selectedTool,
                         zoomScale: $zoomScale,
                         undoManager: $studentCanvasUndoManager,
-                        recognizedText: $recognizedText
+                        recognizedText: $recognizedText,
+                        latexOutput: $latexOutput
                     )
                     .frame(width: geometry.size.width * 2/3)
                     
                     Divider()
                     
-                    // PencilKit testing area - 1/3 of screen
-                    PencilKitTestArea(drawing: $testCanvasDrawing)
-                        .frame(width: geometry.size.width * 1/3)
+                // LaTeX output area - 1/3 of screen
+                LaTeXOutputArea(latexOutput: $latexOutput)
+                    .frame(width: geometry.size.width * 1/3)
                 }
                 .overlay(
                     ToolbarView(
@@ -87,6 +95,7 @@ struct StudentWorkArea: View {
     @Binding var zoomScale: CGFloat
     @Binding var undoManager: UndoManager?
     @Binding var recognizedText: String
+    @Binding var latexOutput: String
     
     var body: some View {
         GeometryReader { geometry in
@@ -99,6 +108,7 @@ struct StudentWorkArea: View {
                     zoomScale: $zoomScale,
                     undoManager: $undoManager,
                     recognizedText: $recognizedText,
+                    latexOutput: $latexOutput,
                     frame: CGRect(origin: .zero, size: geometry.size)
                 )
             }
@@ -106,25 +116,89 @@ struct StudentWorkArea: View {
     }
 }
 
-// MARK: - PencilKit Test Area
+// MARK: - LaTeX Output Area
 
-struct PencilKitTestArea: View {
-    @Binding var drawing: PKDrawing
+struct LaTeXOutputArea: View {
+    @Binding var latexOutput: String
     
     var body: some View {
         ZStack {
-            Color.gray.opacity(0.1)
+            Color.blue.opacity(0.05)
             
-            TestCanvasWrapper(drawing: $drawing)
-            
-            VStack {
-                Text("PencilKit Testing Area")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding()
-                Spacer()
+            VStack(alignment: .leading, spacing: 10) {
+                Text("LaTeX Output")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .padding(.horizontal)
+                    .padding(.top)
+                
+                Divider()
+                
+                if latexOutput.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("Draw on the canvas to see LaTeX output")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                        Spacer()
+                    }
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 15) {
+                            // LaTeX code display
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("LaTeX Code:")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(latexOutput)
+                                    .font(.system(.body, design: .monospaced))
+                                    .padding()
+                                    .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                            
+                            // Rendered preview (simplified)
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("Rendered:")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(renderLatexPreview(latexOutput))
+                                    .font(.title2)
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color.white)
+                                    .cornerRadius(8)
+                            }
+                        }
+                        .padding()
+                    }
+                }
             }
         }
+    }
+    
+    private func renderLatexPreview(_ latex: String) -> String {
+        // Simple preview rendering (actual LaTeX rendering would require MathJax or similar)
+        var preview = latex
+        
+        // Remove LaTeX commands for basic preview
+        preview = preview.replacingOccurrences(of: "\\frac{", with: "(")
+        preview = preview.replacingOccurrences(of: "\\sqrt{", with: "√(")
+        preview = preview.replacingOccurrences(of: "\\times", with: "×")
+        preview = preview.replacingOccurrences(of: "\\div", with: "÷")
+        preview = preview.replacingOccurrences(of: "\\leq", with: "≤")
+        preview = preview.replacingOccurrences(of: "\\geq", with: "≥")
+        preview = preview.replacingOccurrences(of: "\\neq", with: "≠")
+        preview = preview.replacingOccurrences(of: "\\pi", with: "π")
+        preview = preview.replacingOccurrences(of: "\\infty", with: "∞")
+        preview = preview.replacingOccurrences(of: "}", with: ")")
+        preview = preview.replacingOccurrences(of: "\\sum", with: "Σ")
+        preview = preview.replacingOccurrences(of: "\\int", with: "∫")
+        
+        return preview
     }
 }
 
@@ -136,6 +210,7 @@ struct CanvasWrapper: UIViewRepresentable {
     @Binding var zoomScale: CGFloat
     @Binding var undoManager: UndoManager?
     @Binding var recognizedText: String
+    @Binding var latexOutput: String
     var frame: CGRect
     
     func makeCoordinator() -> Coordinator {
@@ -252,6 +327,9 @@ struct CanvasWrapper: UIViewRepresentable {
             // Cancel previous recognition timer
             recognitionTimer?.invalidate()
             
+            // Notify processing started
+            NotificationCenter.default.post(name: .myScriptProcessingStarted, object: nil)
+            
             // Debounce recognition to avoid too frequent updates (300ms delay)
             recognitionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] timer in
                 self?.performRecognition(drawing)
@@ -260,6 +338,8 @@ struct CanvasWrapper: UIViewRepresentable {
         }
         
         private func performRecognition(_ drawing: PKDrawing) {
+            let strokeCount = drawing.strokes.count
+            
             // Process all strokes in the drawing for recognition
             var allRecognizedText: [String] = []
             
@@ -269,9 +349,18 @@ struct CanvasWrapper: UIViewRepresentable {
                 }
             }
             
-            // Update recognized text on main thread
+            // If no actual recognition (SDK not loaded), use mock recognition for testing
+            let recognizedText = allRecognizedText.isEmpty ? 
+                LaTeXFormatter.shared.mockRecognize(strokeCount: strokeCount) : 
+                allRecognizedText.joined(separator: " ")
+            
+            // Convert to LaTeX format
+            let latex = LaTeXFormatter.shared.formatAsLaTeX(recognizedText)
+            
+            // Update recognized text and LaTeX output on main thread
             DispatchQueue.main.async {
-                self.parent.recognizedText = allRecognizedText.joined(separator: " ")
+                self.parent.recognizedText = recognizedText
+                self.parent.latexOutput = latex
             }
         }
     }

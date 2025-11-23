@@ -100,6 +100,24 @@ class MyScriptManager {
         return nil // Placeholder - requires actual SDK
     }
     
+    /// Get LaTeX output from math expressions
+    func getLatexOutput(from drawing: PKDrawing) -> String? {
+        guard isInitialized, editor != nil else {
+            return nil
+        }
+        
+        // Convert recognized content to LaTeX
+        // Note: Actual implementation requires MyScript SDK framework
+        // Example: return editor.export(format: .latex)
+        
+        // For testing purposes, return a placeholder LaTeX string
+        if !drawing.strokes.isEmpty {
+            return "\\frac{x^2 + 2x + 1}{x - 1}" // Placeholder
+        }
+        
+        return nil // Placeholder - requires actual SDK
+    }
+    
     /// Clear current content
     func clear() {
         guard isInitialized, editor != nil else { return }
