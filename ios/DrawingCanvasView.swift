@@ -119,9 +119,8 @@ struct CanvasWrapper: UIViewRepresentable {
         canvas.backgroundColor = .white
         canvas.drawing = drawing
         
-        // Enable undo/redo
-        let undoMgr = UndoManager()
-        canvas.undoManager = undoMgr
+        // Enable undo/redo (PKCanvasView has built-in undoManager)
+        let undoMgr = canvas.undoManager ?? UndoManager()
         
         // Create scroll view for zoom
         let scrollView = UIScrollView()

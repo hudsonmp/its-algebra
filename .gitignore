@@ -1,4 +1,28 @@
-.helix/
-target/
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+
+# Large data
+data/*.txt
+
+# Python/Backend
+__pycache__/
+*.py[cod]
 *.log
-data/
+server.log
+kcs.json
+feedback.json
+mistakes.json
+
+# Helix source (don't add to Xcode)
+*.rs
+*.toml
+Cargo.lock
+docker-compose.yml
+
+# Keep these
+!pyproject.toml
+!helix.toml
