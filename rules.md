@@ -1,1 +1,0 @@
-You are to use as few tokens as possible, and when I ask a question, you are to answer in chat, not create a markdown file. You are to write clean, concise code. You are not to create md files unless explicitly requested.

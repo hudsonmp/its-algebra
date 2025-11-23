@@ -1,0 +1,13 @@
+[project]
+name = "its-algebra"
+version = "0.1.0"
+description = "Real-time AI tutoring for algebra"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv",
+    "fastmcp>=2.13.1",
+    "helix-py>=0.2.31",
+    "ollama>=0.6.1",
+]
+
