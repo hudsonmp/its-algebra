@@ -15,38 +15,66 @@ struct DrawingCanvasView: View {
     @State private var selectedTool: DrawingTool = .pen
     @State private var zoomScale: CGFloat = 1.0
     @State private var studentCanvasUndoManager: UndoManager?
+    @State private var recognizedText: String = ""
+    @State private var isMyScriptInitialized = false
     
     var body: some View {
         GeometryReader { geometry in
-            HStack(spacing: 0) {
-                // Student work area - 2/3 of screen
-                StudentWorkArea(
-                    drawing: $studentCanvasDrawing,
-                    selectedTool: $selectedTool,
-                    zoomScale: $zoomScale,
-                    undoManager: $studentCanvasUndoManager
-                )
-                .frame(width: geometry.size.width * 2/3)
-                
-                Divider()
-                
-                // PencilKit testing area - 1/3 of screen
-                PencilKitTestArea(drawing: $testCanvasDrawing)
-                    .frame(width: geometry.size.width * 1/3)
-            }
-            .overlay(
-                ToolbarView(
-                    selectedTool: $selectedTool,
-                    zoomScale: $zoomScale,
-                    onUndo: {
-                        studentCanvasUndoManager?.undo()
-                    },
-                    onRedo: {
-                        studentCanvasUndoManager?.redo()
+            VStack(spacing: 0) {
+                // Recognized text display
+                if !recognizedText.isEmpty {
+                    HStack {
+                        Text("Recognized: \(recognizedText)")
+                            .font(.headline)
+                            .padding()
+                        Spacer()
+                        Button("Clear") {
+                            recognizedText = ""
+                            MyScriptManager.shared.clear()
+                        }
+                        .padding()
                     }
-                ),
-                alignment: .top
-            )
+                    .background(Color.yellow.opacity(0.2))
+                }
+                
+                HStack(spacing: 0) {
+                    // Student work area - 2/3 of screen
+                    StudentWorkArea(
+                        drawing: $studentCanvasDrawing,
+                        selectedTool: $selectedTool,
+                        zoomScale: $zoomScale,
+                        undoManager: $studentCanvasUndoManager,
+                        recognizedText: $recognizedText
+                    )
+                    .frame(width: geometry.size.width * 2/3)
+                    
+                    Divider()
+                    
+                    // PencilKit testing area - 1/3 of screen
+                    PencilKitTestArea(drawing: $testCanvasDrawing)
+                        .frame(width: geometry.size.width * 1/3)
+                }
+                .overlay(
+                    ToolbarView(
+                        selectedTool: $selectedTool,
+                        zoomScale: $zoomScale,
+                        onUndo: {
+                            studentCanvasUndoManager?.undo()
+                        },
+                        onRedo: {
+                            studentCanvasUndoManager?.redo()
+                        }
+                    ),
+                    alignment: .top
+                )
+            }
+        }
+        .onAppear {
+            // Initialize MyScript SDK
+            if !isMyScriptInitialized {
+                isMyScriptInitialized = MyScriptManager.shared.initialize()
+                _ = MyScriptManager.shared.createTextEditor()
+            }
         }
     }
 }
@@ -58,6 +86,7 @@ struct StudentWorkArea: View {
     @Binding var selectedTool: DrawingTool
     @Binding var zoomScale: CGFloat
     @Binding var undoManager: UndoManager?
+    @Binding var recognizedText: String
     
     var body: some View {
         GeometryReader { geometry in
@@ -69,6 +98,7 @@ struct StudentWorkArea: View {
                     selectedTool: $selectedTool,
                     zoomScale: $zoomScale,
                     undoManager: $undoManager,
+                    recognizedText: $recognizedText,
                     frame: CGRect(origin: .zero, size: geometry.size)
                 )
             }
@@ -105,6 +135,7 @@ struct CanvasWrapper: UIViewRepresentable {
     @Binding var selectedTool: DrawingTool
     @Binding var zoomScale: CGFloat
     @Binding var undoManager: UndoManager?
+    @Binding var recognizedText: String
     var frame: CGRect
     
     func makeCoordinator() -> Coordinator {
@@ -174,9 +205,14 @@ struct CanvasWrapper: UIViewRepresentable {
         var scrollView: UIScrollView?
         var canvas: PKCanvasView?
         var undoManager: UndoManager?
+        private var recognitionTimer: Timer?
         
         init(_ parent: CanvasWrapper) {
             self.parent = parent
+        }
+        
+        deinit {
+            recognitionTimer?.invalidate()
         }
         
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -205,6 +241,38 @@ struct CanvasWrapper: UIViewRepresentable {
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
             // Update the binding when drawing changes
             parent.drawing = canvasView.drawing
+            
+            // Process strokes for MyScript real-time recognition
+            processStrokesForRecognition(canvasView.drawing)
+        }
+        
+        private var recognitionTimer: Timer?
+        
+        private func processStrokesForRecognition(_ drawing: PKDrawing) {
+            // Cancel previous recognition timer
+            recognitionTimer?.invalidate()
+            
+            // Debounce recognition to avoid too frequent updates (300ms delay)
+            recognitionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] timer in
+                self?.performRecognition(drawing)
+                timer.invalidate()
+            }
+        }
+        
+        private func performRecognition(_ drawing: PKDrawing) {
+            // Process all strokes in the drawing for recognition
+            var allRecognizedText: [String] = []
+            
+            for stroke in drawing.strokes {
+                if let text = MyScriptManager.shared.processStroke(stroke, from: drawing), !text.isEmpty {
+                    allRecognizedText.append(text)
+                }
+            }
+            
+            // Update recognized text on main thread
+            DispatchQueue.main.async {
+                self.parent.recognizedText = allRecognizedText.joined(separator: " ")
+            }
         }
     }
 }
