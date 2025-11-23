@@ -1,0 +1,534 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Student Interaction Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .control-group select, .control-group input {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+        
+        .control-group select:focus, .control-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .problem-display {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 600;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .problem-display .equation {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin: 0 10px;
+        }
+        
+        .problem-display .step-action {
+            font-size: 0.6em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        .interactions-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+        }
+        
+        .interactions {
+            padding: 30px;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .interaction {
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .interaction:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left-color: #764ba2;
+        }
+        
+        .interaction.active {
+            background: #e7f3ff;
+            border-left-color: #2196F3;
+            box-shadow: 0 4px 12px rgba(33,150,243,0.2);
+        }
+        
+        .interaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .interaction-time {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .interaction-type {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+        
+        .type-hint {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .type-attempt {
+            background: #28a745;
+            color: white;
+        }
+        
+        .outcome-correct {
+            background: #28a745;
+            color: white;
+        }
+        
+        .outcome-incorrect {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .outcome-ungraded {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .interaction-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .data-field {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .data-value {
+            color: #333;
+            font-size: 1em;
+            word-break: break-word;
+        }
+        
+        .feedback-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        
+        .sidebar {
+            background: #f8f9fa;
+            padding: 30px;
+            border-left: 2px solid #e9ecef;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .sidebar h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .problem-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .problem-info h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .problem-info p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+        
+        .step-timeline {
+            margin-top: 20px;
+        }
+        
+        .step-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #667eea;
+            font-size: 0.9em;
+        }
+        
+        .step-item .step-time {
+            color: #999;
+            font-size: 0.85em;
+        }
+        
+        .step-item .step-equation {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #333;
+            margin: 5px 0;
+        }
+        
+        .step-item .step-action {
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Interactive Student Interaction Visualization</h1>
+            <p>Click on interactions to see the problem state at that moment</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Filter:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterInteractions('all')">All</button>
+                    <button class="filter-btn" onclick="filterInteractions('attempt')">Attempts</button>
+                    <button class="filter-btn" onclick="filterInteractions('hint')">Hints</button>
+                    <button class="filter-btn" onclick="filterInteractions('correct')">Correct</button>
+                    <button class="filter-btn" onclick="filterInteractions('incorrect')">Incorrect</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="problem-display" id="problemDisplay">
+            <div>
+                <div class="equation" id="currentEquation">Select an interaction to see the problem</div>
+                <div class="step-action" id="currentAction"></div>
+            </div>
+        </div>
+        
+        <div class="interactions-container">
+            <div class="interactions" id="interactionsList">
+                <!-- Interactions will be inserted here -->
+            </div>
+            
+            <div class="sidebar">
+                <h3>Problem Information</h3>
+                <div class="problem-info" id="problemInfo">
+                    <h4>Current Problem</h4>
+                    <p id="problemName">-</p>
+                    <p><strong>Knowledge Component:</strong> <span id="kcProblem">-</span></p>
+                    <p><strong>Category:</strong> <span id="kcCategory">-</span></p>
+                </div>
+                
+                <h3>Step Timeline</h3>
+                <div class="step-timeline" id="stepTimeline">
+                    <!-- Steps will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const interactions = [{"time": "13:24:27", "full_time": "2024-07-01 13:24:27", "duration": "0", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "01e1a300d4bbb4b3c88f", "action_type": "SIM_STUDENT_PLE", "action": "Peer Learning Environment Started", "selection": "", "input": "", "attempt": 1, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:33", "full_time": "2024-07-01 13:24:33", "duration": "6", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "ff28fb2116ba145607fe", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 1, "problem_name": "START", "step_name": "'START", "feedback": "What problem should we work on?", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:45", "full_time": "2024-07-01 13:24:45", "duration": "12", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "67cb5f3d821fedcab9f3", "action_type": "SIM_STUDENT_PLE", "action": "Roll a dice Button Clicked", "selection": "", "input": "", "attempt": 2, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:46", "full_time": "2024-07-01 13:24:46", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "a444697b01e254918845", "action_type": "SIM_STUDENT_PLE", "action": "Roll a dice Button Clicked", "selection": "", "input": "", "attempt": 3, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:47", "full_time": "2024-07-01 13:24:47", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "b27d177dcdabe592f83a", "action_type": "SIM_STUDENT_PLE", "action": "Roll a dice Button Clicked", "selection": "", "input": "", "attempt": 4, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:48", "full_time": "2024-07-01 13:24:48", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "545a559c9274b65693ca", "action_type": "SIM_STUDENT_PLE", "action": "Roll a dice Button Clicked", "selection": "", "input": "", "attempt": 5, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:49", "full_time": "2024-07-01 13:24:49", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "537194de8849f268e368", "action_type": "SIM_STUDENT_PLE", "action": "Roll a dice Button Clicked", "selection": "", "input": "", "attempt": 6, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:56", "full_time": "2024-07-01 13:24:56", "duration": "2.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "9801a0e7a70d314580ec", "action_type": "SIM_STUDENT_PLE", "action": "Avatar Image Saved", "selection": "", "input": "", "attempt": 7, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:56", "full_time": "2024-07-01 13:24:56", "duration": "2.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "ad413bd3cf0524f89be2", "action_type": "SIM_STUDENT_PLE", "action": "Splash screen appeared", "selection": "", "input": "", "attempt": 8, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:24:56", "full_time": "2024-07-01 13:24:56", "duration": "2.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "64eeda4fbf175ebf65cd", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 2, "problem_name": "START", "step_name": "'START", "feedback": "batman: What problem should we work on?", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:11", "full_time": "2024-07-01 13:25:11", "duration": "15", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "38399e45ffd8f0034a60", "action_type": "SIM_STUDENT_PLE", "action": "Splash screen", "selection": "", "input": "", "attempt": 9, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:15", "full_time": "2024-07-01 13:25:15", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "27a1123ade85ad9f2ebf", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Left Tab", "selection": "", "input": "", "attempt": 10, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:15", "full_time": "2024-07-01 13:25:15", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "2b86e08ac3fc995a5d45", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Switched Tab", "selection": "", "input": "", "attempt": 11, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:15", "full_time": "2024-07-01 13:25:15", "duration": "1", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "dbcbd9cfb714bdcb1bed", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "Quiz", "input": "'-1", "attempt": 4, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:15", "full_time": "2024-07-01 13:25:15", "duration": "1", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "bf5945ee45de645ec544", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "Quiz", "input": "'-1", "attempt": 3, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:19", "full_time": "2024-07-01 13:25:19", "duration": "4", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "b12b3ddca98a38655e80", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Student Tried to Expand Untaken Quiz", "selection": "", "input": "", "attempt": 12, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:21", "full_time": "2024-07-01 13:25:21", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "14e415b0eeed57d5d67d", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Left Tab", "selection": "", "input": "", "attempt": 13, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:21", "full_time": "2024-07-01 13:25:21", "duration": "1", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "6fac85586e5b7fb7de5d", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Switched Tab", "selection": "", "input": "", "attempt": 14, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:22", "full_time": "2024-07-01 13:25:22", "duration": "0.5", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "a1fe70971bccbe2a1bea", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "ProblemBank", "input": "'-1", "attempt": 5, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:22", "full_time": "2024-07-01 13:25:22", "duration": "0.5", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "d9211b92b016f1319ea9", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "ProblemBank", "input": "'-1", "attempt": 6, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:30", "full_time": "2024-07-01 13:25:30", "duration": "2", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "24f2ce4745a7b4e550cc", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Left Tab", "selection": "", "input": "", "attempt": 15, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:30", "full_time": "2024-07-01 13:25:30", "duration": "2", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "8d564db5d13b8b8770df", "action_type": "SIM_STUDENT_ACTION_LISTENER", "action": "Switched Tab", "selection": "", "input": "", "attempt": 16, "problem_name": "START", "step_name": "Unknown", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:30", "full_time": "2024-07-01 13:25:30", "duration": "2", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "a5eb750154dadc49b79c", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "batman", "input": "'-1", "attempt": 7, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:30", "full_time": "2024-07-01 13:25:30", "duration": "2", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "87f323ead7d94f01c27a", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "batman", "input": "'-1", "attempt": 8, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:36", "full_time": "2024-07-01 13:25:36", "duration": "3", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "e4cd39d788884814b03c", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 9, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:36", "full_time": "2024-07-01 13:25:36", "duration": "3", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "decba8f29c60ce4fe912", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 10, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:37", "full_time": "2024-07-01 13:25:37", "duration": "0.2", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "9b80a136113fe60fb07b", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 11, "problem_name": "START", "step_name": "'START", "feedback": "batman: Is this how you wanted the problem?", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:37", "full_time": "2024-07-01 13:25:37", "duration": "0.2", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "c0d7b0493a67dd16dd29", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 12, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:37", "full_time": "2024-07-01 13:25:37", "duration": "0.2", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "26806950c63243b2385e", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 13, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:37", "full_time": "2024-07-01 13:25:37", "duration": "0.2", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "8ddfa4e187bb0aaebca3", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable2_C1R1", "input": "'5", "attempt": 14, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:37", "full_time": "2024-07-01 13:25:37", "duration": "0.2", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "d31266899e3777ed88f1", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable2_C1R1", "input": "'5", "attempt": 15, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "ae2a6bc07a7d0477ec18", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 17, "problem_name": "START", "step_name": "'START", "feedback": "Me: Yes", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "de02c5d0b2d4e712950a", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "yes", "input": "'-1", "attempt": 22, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "5eb18f1aa713b1fe81a5", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "yes", "input": "'-1", "attempt": 21, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "dba0d2954de707a9c4d6", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 16, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "6ed23ba1a6d36b288a13", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable1_C1R1", "input": "'x-7+3", "attempt": 18, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "5c7d8b6e86904f2ff449", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable2_C1R1", "input": "'5", "attempt": 19, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:39", "full_time": "2024-07-01 13:25:39", "duration": "0.286", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "32e0efb340f32f5e416e", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "dorminTable2_C1R1", "input": "'5", "attempt": 20, "problem_name": "START", "step_name": "'START", "feedback": "", "kc_problem": "", "kc_step": "", "kc_category": ""}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "b02093fd2e1efb4f11fa", "action_type": "SIM_STUDENT_STEP", "action": "New Step Started", "selection": "", "input": "", "attempt": 1, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "af36af976e7355ef00d6", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 2, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "batman: Let's see... Bear with me while I think.", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "64786769bc800169ce9f", "action_type": "SIM_STUDENT_LEARNING", "action": "Activation Rules Determined", "selection": "", "input": "", "attempt": 3, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "dbc24dd91940f023518a", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 5, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "batman: Is it alright to enter subtract 7 in the transformation now?", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "3a4e8e47abc4eadf6982", "action_type": "SIM_STUDENT_LEARNING", "action": "Activation Rule Considered", "selection": "dorminTable3_C1R1", "input": "'subtract 7", "attempt": 4, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:41", "full_time": "2024-07-01 13:25:41", "duration": "0.333", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "ac2372203ecb6f03ceee", "action_type": "SIM_STUDENT_PROBLEM", "action": "New Problem Entered", "selection": "", "input": "", "attempt": 1, "problem_name": "'x-7+3=5", "step_name": "Unknown", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "", "kc_category": ""}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "6d5baec05b5f363e7c88", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 6, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "Me: No", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "48327f86b73391537f96", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 7, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "batman: Oh, not subtract 7.", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "b8a1f4b880a9fb1fa408", "action_type": "SIM_STUDENT_DIALOGUE", "action": "Chat Dialog Entered", "selection": "", "input": "", "attempt": 11, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "batman: Can you help me out here? I'm stuck, I don't know what I need to do.", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "ATTEMPT", "outcome": "CORRECT", "transaction_id": "d5c2f3fbf0da5135f796", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "no", "input": "'-1", "attempt": 10, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "HINT_REQUEST", "outcome": "UNGRADED", "transaction_id": "fa005777750e05053669", "action_type": "SIM_STUDENT_LEARNING", "action": "Negative Example Received", "selection": "dorminTable3_C1R1", "input": "'subtract 7", "attempt": 9, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}, {"time": "13:25:50", "full_time": "2024-07-01 13:25:50", "duration": "1.5", "response_type": "ATTEMPT", "outcome": "INCORRECT", "transaction_id": "9996f25b7fd3e45163b0", "action_type": "SIM_STUDENT_METATUTOR", "action": "Metatutor Model Traced", "selection": "no", "input": "'-1", "attempt": 8, "problem_name": "'x-7+3=5", "step_name": "'x-7+3=5", "feedback": "", "kc_problem": "'v-N+N=N", "kc_step": "'v-N+N=N", "kc_category": "Transformation"}];
+        let currentFilter = 'all';
+        
+        function renderInteractions() {
+            const container = document.getElementById('interactionsList');
+            container.innerHTML = '';
+            
+            const filtered = interactions.filter(i => {
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'attempt') return i.response_type === 'ATTEMPT';
+                if (currentFilter === 'hint') return i.response_type === 'HINT_REQUEST';
+                if (currentFilter === 'correct') return i.outcome === 'CORRECT';
+                if (currentFilter === 'incorrect') return i.outcome === 'INCORRECT';
+                return true;
+            });
+            
+            filtered.forEach((interaction, idx) => {
+                const div = document.createElement('div');
+                div.className = 'interaction';
+                div.dataset.index = idx;
+                div.onclick = () => selectInteraction(idx);
+                
+                const typeClass = interaction.response_type.includes('HINT') ? 'type-hint' : 'type-attempt';
+                const outcomeClass = interaction.outcome ? `outcome-${interaction.outcome.toLowerCase()}` : '';
+                
+                div.innerHTML = `
+                    <div class="interaction-header">
+                        <div>
+                            <span class="interaction-time">${interaction.time}</span>
+                            <span class="interaction-type ${typeClass}">${interaction.response_type}</span>
+                            ${interaction.outcome ? `<span class="interaction-type ${outcomeClass}">${interaction.outcome}</span>` : ''}
+                        </div>
+                        <div style="font-size: 0.9em; color: #666;">
+                            Duration: ${interaction.duration}s | Attempt #${interaction.attempt}
+                        </div>
+                    </div>
+                    <div class="interaction-body">
+                        <div class="data-field">
+                            <div class="data-label">Action</div>
+                            <div class="data-value">${interaction.action || 'N/A'}</div>
+                        </div>
+                        <div class="data-field">
+                            <div class="data-label">Input</div>
+                            <div class="data-value">${interaction.input && interaction.input !== '-1' ? interaction.input : 'N/A'}</div>
+                        </div>
+                        <div class="data-field">
+                            <div class="data-label">Step</div>
+                            <div class="data-value">${interaction.step_name || 'N/A'}</div>
+                        </div>
+                    </div>
+                    ${interaction.feedback ? `
+                    <div class="feedback-box">
+                        <div class="data-label">Feedback</div>
+                        <div class="data-value">${interaction.feedback}</div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        function selectInteraction(index) {
+            const filtered = interactions.filter(i => {
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'attempt') return i.response_type === 'ATTEMPT';
+                if (currentFilter === 'hint') return i.response_type === 'HINT_REQUEST';
+                if (currentFilter === 'correct') return i.outcome === 'CORRECT';
+                if (currentFilter === 'incorrect') return i.outcome === 'INCORRECT';
+                return true;
+            });
+            
+            const interaction = filtered[index];
+            if (!interaction) return;
+            
+            // Update active state
+            document.querySelectorAll('.interaction').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.interaction')[index]?.classList.add('active');
+            
+            // Update problem display
+            const stepInfo = parseStep(interaction.step_name);
+            const problemEq = interaction.problem_name && interaction.problem_name !== 'START' 
+                ? interaction.problem_name.replace("'", "") 
+                : stepInfo.equation || 'No problem displayed';
+            
+            document.getElementById('currentEquation').textContent = problemEq;
+            document.getElementById('currentAction').textContent = stepInfo.action 
+                ? `Action: ${stepInfo.action}` 
+                : '';
+            
+            // Update problem info
+            document.getElementById('problemName').textContent = interaction.problem_name || '-';
+            document.getElementById('kcProblem').textContent = interaction.kc_problem || '-';
+            document.getElementById('kcCategory').textContent = interaction.kc_category || '-';
+            
+            // Update step timeline
+            updateStepTimeline(interaction);
+        }
+        
+        function parseStep(stepName) {
+            if (!stepName || stepName === 'Unknown') return {equation: null, action: null};
+            
+            let step = stepName.toString().trim();
+            if (step.startsWith("'")) step = step.substring(1);
+            
+            if (step.includes('[')) {
+                const parts = step.split('[');
+                const equation = parts[0];
+                const action = parts[1] ? parts[1].replace(']', '') : null;
+                return {equation, action};
+            }
+            
+            return {equation: step, action: null};
+        }
+        
+        function updateStepTimeline(currentInteraction) {
+            const timeline = document.getElementById('stepTimeline');
+            timeline.innerHTML = '';
+            
+            // Find all steps for this problem
+            const problemSteps = interactions
+                .filter(i => i.problem_name === currentInteraction.problem_name && i.step_name && i.step_name !== 'Unknown')
+                .slice(0, 10);
+            
+            problemSteps.forEach(step => {
+                const stepInfo = parseStep(step.step_name);
+                if (!stepInfo.equation) return;
+                
+                const div = document.createElement('div');
+                div.className = 'step-item';
+                div.innerHTML = `
+                    <div class="step-time">${step.time}</div>
+                    <div class="step-equation">${stepInfo.equation}</div>
+                    ${stepInfo.action ? `<div class="step-action">${stepInfo.action}</div>` : ''}
+                    ${step.outcome ? `<div style="color: ${step.outcome === 'CORRECT' ? '#28a745' : step.outcome === 'INCORRECT' ? '#dc3545' : '#6c757d'}; margin-top: 5px;">${step.outcome}</div>` : ''}
+                `;
+                timeline.appendChild(div);
+            });
+            
+            if (problemSteps.length === 0) {
+                timeline.innerHTML = '<p style="color: #999; font-style: italic;">No steps recorded</p>';
+            }
+        }
+        
+        function filterInteractions(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderInteractions();
+        }
+        
+        // Initial render
+        renderInteractions();
+        
+        // Select first interaction
+        setTimeout(() => {
+            if (interactions.length > 0) {
+                selectInteraction(0);
+            }
+        }, 100);
+    </script>
+</body>
+</html>
