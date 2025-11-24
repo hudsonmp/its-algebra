@@ -11,7 +11,9 @@ targets:
     platform: iOS
     deploymentTarget: "14.0"
     sources:
-      - path: .
+      - path: ../ios
+        includes:
+          - "*.swift"
         excludes:
           - "*.md"
           - "*.html"
@@ -25,6 +27,11 @@ targets:
           - "db/**"
           - ".claude/**"
           - ".git/**"
+          - "*.xcodeproj/**"
+          - "*.xcworkspace/**"
+      - path: ../MyScriptCertificate
+        includes:
+          - "*.c"
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.itsalgebra.app
       TARGETED_DEVICE_FAMILY: "2"  # iPad only
@@ -33,8 +40,12 @@ targets:
       SWIFT_VERSION: "5.0"
       GENERATE_INFOPLIST_FILE: YES
       ENABLE_PREVIEWS: YES
+      CODE_SIGN_STYLE: Automatic
+      # Framework search paths - will be used when framework is manually added
+      FRAMEWORK_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/../Frameworks"
+      LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
     info:
-      path: Info.plist
+      path: ../ios/Info.plist
       properties:
         UISupportedInterfaceOrientations~ipad:
           - UIInterfaceOrientationPortrait

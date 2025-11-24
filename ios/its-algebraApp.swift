@@ -12,6 +12,8 @@ struct its_algebraApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(.light)
+                .ignoresSafeArea(.all)
         }
     }
 }

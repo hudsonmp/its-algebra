@@ -1,141 +1,144 @@
-# MyScript SDK Integration Setup Guide
+# MyScript SDK Setup for iPad Air On-Device Recognition
 
-This guide explains how to complete the MyScript Interactive Ink SDK integration for real-time character recognition from stroke data on iPadOS.
+This guide will help you set up MyScript Interactive Ink SDK for real-time handwriting recognition on iPad Air.
 
-## Prerequisites
+## What You Need
 
 1. **MyScript Developer Account**: Register at https://developer.myscript.com
-2. **MyScript Certificate**: Your `MyCertificate.c` file is already in `MyScriptCertificate/` directory
-3. **Xcode**: Latest version with iOS/iPadOS development support
+2. **MyScript Certificate**: Already included in `MyScriptCertificate/MyCertificate.c`
+3. **MyScript Interactive Ink SDK**: Download from MyScript
 
 ## Step 1: Download MyScript SDK
 
-1. Visit https://www.myscript.com/sdk/ or https://github.com/MyScript/interactive-ink-examples-ios
-2. Download the MyScript Interactive Ink SDK for iOS
-3. Extract the SDK framework files
+### Option A: Download from MyScript Website (Recommended)
+1. Go to https://developer.myscript.com/
+2. Sign in to your account
+3. Navigate to Downloads section
+4. Download **MyScript Interactive Ink SDK for iOS** (version 2.x or later)
+5. Extract the downloaded file
 
-## Step 2: Add SDK to Xcode Project
-
-1. Open your project in Xcode
-2. Right-click on your project in the navigator
-3. Select "Add Files to [Project Name]..."
-4. Navigate to the extracted SDK folder
-5. Add the `iink` framework (or `MyScriptInteractiveInk.framework`)
-6. Ensure "Copy items if needed" is checked
-7. Ensure your target is selected
-
-## Step 3: Configure Bridging Header
-
-1. In Xcode, go to your target's Build Settings
-2. Search for "Objective-C Bridging Header"
-3. Set it to: `its-algebra-Bridging-Header.h`
-4. Ensure the bridging header file exists in your project
-
-## Step 4: Update MyScriptManager.swift
-
-Replace the placeholder code in `MyScriptManager.swift` with actual MyScript SDK calls:
-
-```swift
-import iink
-
-class MyScriptManager {
-    private var engine: IINKEngine?
-    private var editor: IINKEditor?
-    
-    func initialize() -> Bool {
-        // Load certificate
-        guard let certificatePath = Bundle.main.path(forResource: "MyCertificate", ofType: "c", inDirectory: "MyScriptCertificate"),
-              let certificateData = try? Data(contentsOf: URL(fileURLWithPath: certificatePath)) else {
-            return false
-        }
-        
-        // Initialize engine with certificate
-        do {
-            engine = try IINKEngine(certificate: certificateData)
-            return true
-        } catch {
-            print("Error initializing MyScript engine: \(error)")
-            return false
-        }
-    }
-    
-    func createTextEditor() -> Bool {
-        guard let engine = engine else { return false }
-        
-        do {
-            editor = try engine.createEditor(contentType: "Text")
-            return true
-        } catch {
-            print("Error creating editor: \(error)")
-            return false
-        }
-    }
-    
-    func processStroke(_ stroke: PKStroke, from drawing: PKDrawing) -> String? {
-        guard let editor = editor else { return nil }
-        
-        // Convert PKStroke to MyScript stroke format
-        let points = stroke.path.interpolatedPoints(by: .distance(1.0))
-        var strokePoints: [CGPoint] = []
-        
-        for point in points {
-            strokePoints.append(point.location)
-        }
-        
-        // Add stroke to editor
-        do {
-            try editor.addStroke(points: strokePoints)
-            
-            // Perform recognition
-            let result = try editor.recognize()
-            return result.text
-        } catch {
-            print("Error processing stroke: \(error)")
-            return nil
-        }
-    }
-}
+### Option B: Use CocoaPods
+Add to your `Podfile`:
+```ruby
+pod 'MyScriptInteractiveInk-Framework', '~> 2.0'
 ```
 
-## Step 5: Add Recognition Resources
+Then run:
+```bash
+pod install
+```
 
-1. Download recognition resources from MyScript Developer Portal
-2. Add the resource files to your Xcode project
-3. Ensure they're included in the app bundle
+## Step 2: Add SDK to Project (Manual Installation)
 
-## Step 6: Update Project Settings
+1. Copy the `iink.framework` from the downloaded SDK to the Frameworks directory:
+```bash
+cd /Users/hudsonmitchell-pullman/its-algebra
+mkdir -p Frameworks
+cp -R /path/to/downloaded/iink.framework ./Frameworks/
+```
 
-1. In Build Settings, ensure:
-   - "Always Embed Swift Standard Libraries" is enabled
-   - Framework search paths include the SDK location
-   - Linker flags include required frameworks
+2. Open the Xcode project:
+```bash
+open config/its-algebra.xcodeproj
+```
 
-## Step 7: Test Integration
+3. In Xcode, add the framework:
+   - Select your project in the navigator (top-level "its-algebra")
+   - Select the "its-algebra" target
+   - Go to "General" tab
+   - Scroll to "Frameworks, Libraries, and Embedded Content"
+   - Click the "+" button
+   - Click "Add Other..." → "Add Files..."
+   - Navigate to `/Users/hudsonmitchell-pullman/its-algebra/Frameworks/`
+   - Select `iink.framework`
+   - Set it to "Embed & Sign"
 
-1. Build and run the app on an iPad
-2. Draw on the canvas
-3. Verify that recognized text appears in the recognition display area
+4. Configure Signing (Required for iPad):
+   - Still in the target settings, go to "Signing & Capabilities" tab
+   - Check "Automatically manage signing"
+   - Select your development team from the dropdown
+   - If you don't have a team, you'll need to add your Apple ID in Xcode Preferences → Accounts
+
+## Step 3: Verify Integration
+
+The app should now properly use MyScript SDK for recognition instead of hardcoded data.
+
+### Test Recognition:
+1. Build and run on iPad Air
+2. Draw simple digits like "1", "2", "3"
+3. The app should recognize actual handwriting instead of showing hardcoded formulas
+
+### If you see "MyScript SDK not initialized":
+- Check that `iink.framework` is in the `Frameworks/` directory
+- Verify your certificate file is valid
+- Check Xcode build logs for framework loading errors
+
+## Step 4: Configuration (Advanced)
+
+### Math Recognition Mode
+The app is configured to use Math recognition mode for better equation recognition. This is set in `MyScriptManager.swift`:
+
+```swift
+editor = try engine.createEditor(contentType: "Math")
+```
+
+### Supported Content Types:
+- `"Text"` - Basic text recognition
+- `"Math"` - Mathematical expressions
+- `"Diagram"` - Shapes and diagrams
+- `"Raw Content"` - Raw ink data
 
 ## Troubleshooting
 
-- **Certificate errors**: Ensure `MyCertificate.c` is properly included in the bundle
-- **Framework not found**: Check framework search paths in Build Settings
-- **Recognition not working**: Verify SDK initialization and editor creation
-- **Bridging header issues**: Ensure the header path is correct in Build Settings
+### Framework Not Found Error
+```bash
+# Check if framework exists
+ls -la Frameworks/iink.framework
+
+# If missing, download and copy it again
+```
+
+### Certificate Error
+```bash
+# Verify certificate file exists
+ls -la MyScriptCertificate/MyCertificate.c
+
+# If certificate is invalid, request a new one from MyScript
+```
+
+### Linker Error / Framework Not Found
+The app is designed to build WITHOUT the framework (it will just show "MyScript SDK not initialized"). 
+If you're getting linker errors:
+1. Make sure you added the framework in Xcode (see Step 2)
+2. Check that framework is set to "Embed & Sign" in General → Frameworks, Libraries, and Embedded Content
+3. Clean build folder: Product → Clean Build Folder (Cmd+Shift+K)
+4. If still failing, you can build without the framework - it just won't recognize handwriting
+
+### Signing Error
+To fix "requires a development team":
+1. In Xcode, select your target
+2. Go to "Signing & Capabilities" tab
+3. Check "Automatically manage signing"
+4. Select your Team (add your Apple ID in Xcode → Preferences → Accounts if needed)
+5. You need a free Apple Developer account to test on iPad
+
+### Recognition Not Working
+- Make sure you're testing on a real iPad (not simulator)
+- MyScript SDK requires actual device for full functionality
+- Check that your MyScript license supports on-device recognition
 
 ## Additional Resources
 
-- MyScript Developer Documentation: https://developer.myscript.com/docs
-- iOS Examples: https://github.com/MyScript/interactive-ink-examples-ios
-- API Reference: https://developer.myscript.com/doc/interactive-ink/
+- **MyScript Documentation**: https://developer.myscript.com/docs
+- **iOS Examples**: https://github.com/MyScript/interactive-ink-examples-ios
+- **API Reference**: https://developer.myscript.com/refguides/interactive-ink/ios/2.0/
 
-## Current Implementation Status
+## Current Status
 
-✅ Certificate file added  
-✅ Integration structure created  
-✅ Canvas integration with recognition hooks  
-⏳ SDK framework needs to be added  
-⏳ Actual SDK calls need to be implemented  
+✅ Mock data removed  
+✅ Real MyScript SDK integration implemented  
+✅ Certificate file included  
+✅ Project configured for framework  
+⏳ Need to download and add `iink.framework`  
 
-Once the SDK framework is added, update `MyScriptManager.swift` with the actual SDK API calls as shown above.
-
+Once you add the framework, the app will perform real handwriting recognition!

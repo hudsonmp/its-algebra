@@ -7,47 +7,62 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		23DD75495F1F1AD254CF903C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733556C8F42469246A225EC /* ContentView.swift */; };
-		2DDA7EB42EC9CC5BC3C9E598 /* DrawingCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C0BCD5529BF746A608214B /* DrawingCanvasView.swift */; };
-		6CBB74DF93733A7100A70F91 /* its-algebraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4DD3F07BF514D896106E86 /* its-algebraApp.swift */; };
-		7DF5C71ECC26389B476B68EE /* its-algebra.xcodeproj in Resources */ = {isa = PBXBuildFile; fileRef = CB6A9A2A50D29019F2EAF5AB /* its-algebra.xcodeproj */; };
+		3E659801E06E437114FC0F43 /* LaTeXFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */; };
+		5AA420E239594E9BD17F11EC /* DrawingCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */; };
+		927AE2DC5AB9863DACAE3572 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5CC6702AC0CB269C2DD12B /* ContentView.swift */; };
+		B9B7BF0FFA74D8D94DB27DF8 /* its-algebraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8685256F779271D2DBC88160 /* its-algebraApp.swift */; };
+		F5AA53EAA90E056455250002 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = ECCED37495C7C879A8535330 /* MyCertificate.c */; };
+		FEE1795BA3421A02306BE421 /* MyScriptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7934EA66D77770A9836800D7 /* MyScriptManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2733556C8F42469246A225EC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		58DF7D3A9ADBB0C15F3B1B27 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		7F4DD3F07BF514D896106E86 /* its-algebraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "its-algebraApp.swift"; sourceTree = "<group>"; };
-		859EE8C70F092E4E59E1533C /* its-algebra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "its-algebra.app"; path = "/Users/hudsonmitchell-pullman/its-algebra/build/Debug-iphoneos/its-algebra.app"; sourceTree = "<absolute>"; };
-		86C0BCD5529BF746A608214B /* DrawingCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingCanvasView.swift; sourceTree = "<group>"; };
-		CB6A9A2A50D29019F2EAF5AB /* its-algebra.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "its-algebra.xcodeproj"; sourceTree = "<group>"; };
-		E19B709A49B4528F61007064 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaTeXFormatter.swift; sourceTree = "<group>"; };
+		7934EA66D77770A9836800D7 /* MyScriptManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyScriptManager.swift; sourceTree = "<group>"; };
+		859EE8C70F092E4E59E1533C /* its-algebra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "its-algebra.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8685256F779271D2DBC88160 /* its-algebraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "its-algebraApp.swift"; sourceTree = "<group>"; };
+		9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingCanvasView.swift; sourceTree = "<group>"; };
+		BC5CC6702AC0CB269C2DD12B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		ECCED37495C7C879A8535330 /* MyCertificate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		06B99F925F0E10BD6938BE96 = {
 			isa = PBXGroup;
 			children = (
-				782F0344C4515ECA7A096201 /* its-algebra */,
+				48ABB384DF02D64B72FFC5BF /* ios */,
+				A3CD128433991DB8F91FEC0C /* MyScriptCertificate */,
+				40D8E3B1CA21F4402E71E688 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		2849EB442ED3C1F200AA65CE /* Products */ = {
+		40D8E3B1CA21F4402E71E688 /* Products */ = {
 			isa = PBXGroup;
+			children = (
+				859EE8C70F092E4E59E1533C /* its-algebra.app */,
+			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		782F0344C4515ECA7A096201 /* its-algebra */ = {
+		48ABB384DF02D64B72FFC5BF /* ios */ = {
 			isa = PBXGroup;
 			children = (
-				E19B709A49B4528F61007064 /* .gitignore */,
-				2733556C8F42469246A225EC /* ContentView.swift */,
-				86C0BCD5529BF746A608214B /* DrawingCanvasView.swift */,
-				58DF7D3A9ADBB0C15F3B1B27 /* Info.plist */,
-				CB6A9A2A50D29019F2EAF5AB /* its-algebra.xcodeproj */,
-				7F4DD3F07BF514D896106E86 /* its-algebraApp.swift */,
+				BC5CC6702AC0CB269C2DD12B /* ContentView.swift */,
+				9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */,
+				8685256F779271D2DBC88160 /* its-algebraApp.swift */,
+				2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */,
+				7934EA66D77770A9836800D7 /* MyScriptManager.swift */,
 			);
-			name = "its-algebra";
-			path = .;
+			name = ios;
+			path = ../ios;
+			sourceTree = "<group>";
+		};
+		A3CD128433991DB8F91FEC0C /* MyScriptCertificate */ = {
+			isa = PBXGroup;
+			children = (
+				ECCED37495C7C879A8535330 /* MyCertificate.c */,
+			);
+			name = MyScriptCertificate;
+			path = ../MyScriptCertificate;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -58,7 +73,6 @@
 			buildConfigurationList = 33352CA81B8EA86F327AAA72 /* Build configuration list for PBXNativeTarget "its-algebra" */;
 			buildPhases = (
 				A50A69C4AE115DF2CF478601 /* Sources */,
-				65D472BB0B0E3CC651E66310 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -79,6 +93,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					479806DD5312963B0D326826 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = C057EFC626D70B9DC030F3DC /* Build configuration list for PBXProject "its-algebra" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -91,12 +110,6 @@
 			mainGroup = 06B99F925F0E10BD6938BE96;
 			minimizedProjectReferenceProxies = 1;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 2849EB442ED3C1F200AA65CE /* Products */;
-					ProjectRef = CB6A9A2A50D29019F2EAF5AB /* its-algebra.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				479806DD5312963B0D326826 /* its-algebra */,
@@ -104,25 +117,17 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		65D472BB0B0E3CC651E66310 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7DF5C71ECC26389B476B68EE /* its-algebra.xcodeproj in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		A50A69C4AE115DF2CF478601 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23DD75495F1F1AD254CF903C /* ContentView.swift in Sources */,
-				2DDA7EB42EC9CC5BC3C9E598 /* DrawingCanvasView.swift in Sources */,
-				6CBB74DF93733A7100A70F91 /* its-algebraApp.swift in Sources */,
+				927AE2DC5AB9863DACAE3572 /* ContentView.swift in Sources */,
+				5AA420E239594E9BD17F11EC /* DrawingCanvasView.swift in Sources */,
+				3E659801E06E437114FC0F43 /* LaTeXFormatter.swift in Sources */,
+				F5AA53EAA90E056455250002 /* MyCertificate.c in Sources */,
+				FEE1795BA3421A02306BE421 /* MyScriptManager.swift in Sources */,
+				B9B7BF0FFA74D8D94DB27DF8 /* its-algebraApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,9 +139,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Frameworks",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = ../ios/Info.plist;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -212,10 +222,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 255UFAZ5KH;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Frameworks",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = ../ios/Info.plist;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;

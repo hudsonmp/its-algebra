@@ -14,11 +14,14 @@ app = Flask(__name__)
 CORS(app)
 
 # Load data
-with open('kcs.json') as f:
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(BASE_DIR, 'kcs.json')) as f:
     KCS = json.load(f)
-with open('feedback.json') as f:
+with open(os.path.join(BASE_DIR, 'feedback.json')) as f:
     FEEDBACK = json.load(f)
-with open('mistakes.json') as f:
+with open(os.path.join(BASE_DIR, 'mistakes.json')) as f:
     MISTAKES = json.load(f)
 
 # Create lookup maps

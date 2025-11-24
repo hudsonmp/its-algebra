@@ -5,17 +5,14 @@ Creates nodes and edges following schema.hx structure
 """
 import json
 
-import os
-
 def generate_helix_queries():
     """Generate Helix query commands to import all data"""
-    script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    with open(os.path.join(script_dir, 'kcs.json')) as f:
+    with open('kcs.json') as f:
         kcs = json.load(f)
-    with open(os.path.join(script_dir, 'feedback.json')) as f:
+    with open('feedback.json') as f:
         feedback = json.load(f)
-    with open(os.path.join(script_dir, 'mistakes.json')) as f:
+    with open('mistakes.json') as f:
         mistakes = json.load(f)
     
     queries = []
@@ -120,15 +117,12 @@ if __name__ == '__main__':
     
     helix_script = generate_helix_queries()
     
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    output_path = os.path.join(project_root, 'db', 'import.hx')
-    
-    with open(output_path, 'w') as f:
+    with open('helix_import.hx', 'w') as f:
         f.write(helix_script)
     
-    print(f"✅ Generated {output_path} ({len(helix_script)} characters)")
+    print(f"✅ Generated helix_import.hx ({len(helix_script)} characters)")
     print("\n📋 To import into Helix:")
-    print("   1. Review db/import.hx")
-    print("   2. Run: ./scripts/setup-helix.sh")
-    print("   3. Or manually run queries in your Helix database")
+    print("   1. Review helix_import.hx")
+    print("   2. Run queries in your Helix database")
+    print("   3. Use kcs.json, feedback.json, mistakes.json for batch import")
 

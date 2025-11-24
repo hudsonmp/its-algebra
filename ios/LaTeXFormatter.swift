@@ -41,23 +41,7 @@ class LaTeXFormatter {
         return latex
     }
     
-    /// Mock recognition for testing - generates LaTeX from simple patterns
-    func mockRecognize(strokeCount: Int) -> String {
-        let samples = [
-            "x^2 + 2x + 1",
-            "\\frac{a}{b} + c",
-            "\\sqrt{x} = y",
-            "2x + 3 = 7",
-            "y = mx + b",
-            "a^2 + b^2 = c^2",
-            "\\int x dx",
-            "\\sum_{i=1}^{n} i"
-        ]
-        
-        // Return different samples based on stroke count
-        let index = strokeCount % samples.count
-        return samples[index]
-    }
+    // Mock recognition removed - app now requires MyScript SDK for recognition
     
     private func formatFractions(_ text: String) -> String {
         // Simple pattern matching for fractions

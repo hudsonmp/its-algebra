@@ -24,6 +24,9 @@ struct DrawingCanvasView: View {
     @State private var recognizedText: String = ""
     @State private var latexOutput: String = ""
     @State private var isMyScriptInitialized = false
+    @State private var isFullscreen = false
+    @State private var eraserMode: EraserMode = .object
+    @State private var eraserSize: CGFloat = 20.0
     
     var body: some View {
         GeometryReader { geometry in
@@ -52,7 +55,9 @@ struct DrawingCanvasView: View {
                         zoomScale: $zoomScale,
                         undoManager: $studentCanvasUndoManager,
                         recognizedText: $recognizedText,
-                        latexOutput: $latexOutput
+                        latexOutput: $latexOutput,
+                        eraserMode: $eraserMode,
+                        eraserSize: $eraserSize
                     )
                     .frame(width: geometry.size.width * 2/3)
                     
@@ -66,6 +71,9 @@ struct DrawingCanvasView: View {
                     ToolbarView(
                         selectedTool: $selectedTool,
                         zoomScale: $zoomScale,
+                        isFullscreen: $isFullscreen,
+                        eraserMode: $eraserMode,
+                        eraserSize: $eraserSize,
                         onUndo: {
                             studentCanvasUndoManager?.undo()
                         },
@@ -76,7 +84,11 @@ struct DrawingCanvasView: View {
                     alignment: .top
                 )
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.gray.opacity(0.1))
         }
+        .ignoresSafeArea(.all)
+        .statusBarHidden(isFullscreen)
         .onAppear {
             // Initialize MyScript SDK
             if !isMyScriptInitialized {
@@ -96,6 +108,8 @@ struct StudentWorkArea: View {
     @Binding var undoManager: UndoManager?
     @Binding var recognizedText: String
     @Binding var latexOutput: String
+    @Binding var eraserMode: EraserMode
+    @Binding var eraserSize: CGFloat
     
     var body: some View {
         GeometryReader { geometry in
@@ -109,6 +123,8 @@ struct StudentWorkArea: View {
                     undoManager: $undoManager,
                     recognizedText: $recognizedText,
                     latexOutput: $latexOutput,
+                    eraserMode: $eraserMode,
+                    eraserSize: $eraserSize,
                     frame: CGRect(origin: .zero, size: geometry.size)
                 )
             }
@@ -157,7 +173,8 @@ struct LaTeXOutputArea: View {
                                     .font(.system(.body, design: .monospaced))
                                     .padding()
                                     .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
+                                    .cornerRadius(8)
+                            }
                             
                             // Rendered preview (simplified)
                             VStack(alignment: .leading, spacing: 5) {
@@ -211,6 +228,8 @@ struct CanvasWrapper: UIViewRepresentable {
     @Binding var undoManager: UndoManager?
     @Binding var recognizedText: String
     @Binding var latexOutput: String
+    @Binding var eraserMode: EraserMode
+    @Binding var eraserSize: CGFloat
     var frame: CGRect
     
     func makeCoordinator() -> Coordinator {
@@ -220,15 +239,22 @@ struct CanvasWrapper: UIViewRepresentable {
     func makeUIView(context: Context) -> UIScrollView {
         // Create the canvas view
         let canvas = PKCanvasView()
-        canvas.drawingPolicy = .anyInput // Allow finger and Apple Pencil
-        canvas.tool = selectedTool.toPKTool()
+        // Only allow Apple Pencil for drawing - fingers will be used for zoom/pan
+        canvas.drawingPolicy = .pencilOnly
+        canvas.tool = selectedTool.toPKTool(eraserMode: eraserMode, eraserSize: eraserSize)
         canvas.backgroundColor = .white
         canvas.drawing = drawing
+        // Remove shadow/glow effects from strokes
+        canvas.layer.shadowOpacity = 0
+        canvas.layer.shadowRadius = 0
+        
+        // Apple Pencil Pro hover effects are enabled by default on iOS 17.5+
+        // No explicit API needed - PKCanvasView handles it automatically
         
         // Enable undo/redo (PKCanvasView has built-in undoManager)
         let undoMgr = canvas.undoManager ?? UndoManager()
         
-        // Create scroll view for zoom
+        // Create scroll view for zoom and pan (finger gestures)
         let scrollView = UIScrollView()
         scrollView.minimumZoomScale = 0.5
         scrollView.maximumZoomScale = 5.0
@@ -237,6 +263,11 @@ struct CanvasWrapper: UIViewRepresentable {
         scrollView.showsVerticalScrollIndicator = true
         scrollView.showsHorizontalScrollIndicator = true
         scrollView.bouncesZoom = true
+        scrollView.bounces = true
+        scrollView.alwaysBounceVertical = true
+        scrollView.alwaysBounceHorizontal = true
+        // Enable pinch-to-zoom with fingers
+        scrollView.pinchGestureRecognizer?.isEnabled = true
         
         // Set canvas frame to match scroll view bounds
         canvas.frame = CGRect(origin: .zero, size: frame.size)
@@ -248,8 +279,18 @@ struct CanvasWrapper: UIViewRepresentable {
         context.coordinator.canvas = canvas
         context.coordinator.undoManager = undoMgr
         
-        // Update the binding with undo manager
-        undoManager = undoMgr
+        // Update the binding with undo manager asynchronously to avoid state modification during view update
+        DispatchQueue.main.async {
+            undoManager = undoMgr
+        }
+        
+        // Set canvas delegate to handle drawing changes
+        canvas.delegate = context.coordinator
+        
+        // Set up Apple Pencil Pro support
+        if #available(iOS 17.5, *) {
+            context.coordinator.setupPencilProGestures(for: canvas)
+        }
         
         return scrollView
     }
@@ -262,8 +303,11 @@ struct CanvasWrapper: UIViewRepresentable {
         
         // Update tool
         if let canvas = context.coordinator.canvas {
-            canvas.tool = selectedTool.toPKTool()
-            canvas.drawing = drawing
+            // Always update tool when selected tool changes or eraser settings change
+            canvas.tool = selectedTool.toPKTool(eraserMode: eraserMode, eraserSize: eraserSize)
+            
+            // Don't overwrite canvas drawing - let the delegate handle updates
+            // The canvas maintains its own state, and we sync FROM canvas TO binding via delegate
         }
         
         // Update canvas frame to match scroll view bounds
@@ -287,6 +331,12 @@ struct CanvasWrapper: UIViewRepresentable {
         
         deinit {
             recognitionTimer?.invalidate()
+        }
+        
+        @available(iOS 17.5, *)
+        func setupPencilProGestures(for canvas: PKCanvasView) {
+            // Apple Pencil Pro features (hover, squeeze, barrel roll) are handled
+            // automatically by PKCanvasView and PKToolPicker on iOS 17.5+
         }
         
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -313,14 +363,16 @@ struct CanvasWrapper: UIViewRepresentable {
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            // Update the binding when drawing changes
+            // Update the binding when drawing changes (including erasing)
             parent.drawing = canvasView.drawing
             
             // Process strokes for MyScript real-time recognition
+            // This will trigger even when erasing (drawing changes)
             processStrokesForRecognition(canvasView.drawing)
         }
         
-        private var recognitionTimer: Timer?
+        // Apple Pencil Pro barrel roll and other features are handled automatically
+        // by PKCanvasView on iOS 17.5+ - no additional delegate methods needed
         
         private func processStrokesForRecognition(_ drawing: PKDrawing) {
             // Cancel previous recognition timer
@@ -339,19 +391,24 @@ struct CanvasWrapper: UIViewRepresentable {
         private func performRecognition(_ drawing: PKDrawing) {
             let strokeCount = drawing.strokes.count
             
-            // Process all strokes in the drawing for recognition
-            var allRecognizedText: [String] = []
-            
-            for stroke in drawing.strokes {
-                if let text = MyScriptManager.shared.processStroke(stroke, from: drawing), !text.isEmpty {
-                    allRecognizedText.append(text)
+            // Clear recognition if no strokes
+            guard strokeCount > 0 else {
+                DispatchQueue.main.async {
+                    self.parent.recognizedText = ""
+                    self.parent.latexOutput = ""
                 }
+                return
             }
             
-            // If no actual recognition (SDK not loaded), use mock recognition for testing
-            let recognizedText = allRecognizedText.isEmpty ? 
-                LaTeXFormatter.shared.mockRecognize(strokeCount: strokeCount) : 
-                allRecognizedText.joined(separator: " ")
+            // Process the entire drawing context (MyScript works better with full context)
+            guard let recognizedText = MyScriptManager.shared.processDrawing(drawing) else {
+                // SDK not available or no recognition result
+                DispatchQueue.main.async {
+                    self.parent.recognizedText = "MyScript SDK not initialized"
+                    self.parent.latexOutput = ""
+                }
+                return
+            }
             
             // Convert to LaTeX format
             let latex = LaTeXFormatter.shared.formatAsLaTeX(recognizedText)
@@ -380,6 +437,10 @@ struct TestCanvasWrapper: UIViewRepresentable {
         canvas.tool = PKInkingTool(.pen, color: .black, width: 15)
         canvas.backgroundColor = .white
         canvas.drawing = drawing
+        
+        // Apple Pencil Pro hover effects are enabled by default on iOS 17.5+
+        // No explicit API needed - PKCanvasView handles it automatically
+        
         canvas.delegate = context.coordinator
         return canvas
     }
@@ -401,18 +462,41 @@ struct TestCanvasWrapper: UIViewRepresentable {
     }
 }
 
+// MARK: - Eraser Mode Enum
+
+enum EraserMode {
+    case object  // Erases entire strokes
+    case pixel   // Erases pixels
+    
+    var pkEraserType: PKEraserTool.EraserType {
+        switch self {
+        case .object:
+            return .vector
+        case .pixel:
+            return .bitmap
+        }
+    }
+}
+
 // MARK: - Drawing Tool Enum
 
 enum DrawingTool {
     case pen
     case eraser
     
-    func toPKTool() -> PKTool {
+    func toPKTool(eraserMode: EraserMode = .object, eraserSize: CGFloat = 20.0) -> PKTool {
         switch self {
         case .pen:
-            return PKInkingTool(.pen, color: .black, width: 15)
+            // Create pen tool without shadow/glow effect
+            // Using a narrower width and ensuring no glow
+            return PKInkingTool(.pen, color: .black, width: 2.0)
         case .eraser:
-            return PKEraserTool(.vector)
+            // PKEraserTool(width:) is iOS 16.4+, use compatible version for iOS 14.0
+            if #available(iOS 16.4, *) {
+                return PKEraserTool(eraserMode.pkEraserType, width: eraserSize)
+            } else {
+                return PKEraserTool(eraserMode.pkEraserType)
+            }
         }
     }
 }
@@ -422,6 +506,9 @@ enum DrawingTool {
 struct ToolbarView: View {
     @Binding var selectedTool: DrawingTool
     @Binding var zoomScale: CGFloat
+    @Binding var isFullscreen: Bool
+    @Binding var eraserMode: EraserMode
+    @Binding var eraserSize: CGFloat
     let onUndo: () -> Void
     let onRedo: () -> Void
     
@@ -452,6 +539,43 @@ struct ToolbarView: View {
                         .padding()
                         .background(selectedTool == .eraser ? Color.blue.opacity(0.2) : Color.clear)
                         .cornerRadius(8)
+                }
+                
+                // Eraser mode selector (only visible when eraser is selected)
+                if selectedTool == .eraser {
+                    // Object eraser button
+                    Button(action: {
+                        eraserMode = .object
+                    }) {
+                        Image(systemName: "scribble.variable")
+                            .font(.title3)
+                            .foregroundColor(eraserMode == .object ? .blue : .gray)
+                            .padding(8)
+                            .background(eraserMode == .object ? Color.blue.opacity(0.2) : Color.clear)
+                            .cornerRadius(6)
+                    }
+                    
+                    // Pixel eraser button
+                    Button(action: {
+                        eraserMode = .pixel
+                    }) {
+                        Image(systemName: "circle.fill")
+                            .font(.title3)
+                            .foregroundColor(eraserMode == .pixel ? .blue : .gray)
+                            .padding(8)
+                            .background(eraserMode == .pixel ? Color.blue.opacity(0.2) : Color.clear)
+                            .cornerRadius(6)
+                    }
+                    
+                    // Eraser size slider
+                    VStack(spacing: 2) {
+                        Text("Size")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                        Slider(value: $eraserSize, in: 5...100, step: 1)
+                            .frame(width: 100)
+                    }
+                    .padding(.horizontal, 8)
                 }
                 
                 Divider()
@@ -514,6 +638,24 @@ struct ToolbarView: View {
                         .cornerRadius(6)
                 }
                 
+                Divider()
+                    .frame(height: 30)
+                
+                // Fullscreen button
+                Button(action: {
+                    withAnimation {
+                        isFullscreen.toggle()
+                        toggleFullscreen()
+                    }
+                }) {
+                    Image(systemName: isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                        .font(.title2)
+                        .foregroundColor(isFullscreen ? .blue : .gray)
+                        .padding()
+                        .background(isFullscreen ? Color.blue.opacity(0.2) : Color.clear)
+                        .cornerRadius(8)
+                }
+                
                 Spacer()
             }
             .padding()
@@ -524,6 +666,12 @@ struct ToolbarView: View {
             Spacer()
         }
         .padding()
+    }
+    
+    private func toggleFullscreen() {
+        // On iPad, "fullscreen" means hiding the status bar and maximizing the canvas
+        // The status bar visibility is controlled by the isFullscreen state binding
+        // which is used in the .statusBarHidden modifier
     }
 }
 
