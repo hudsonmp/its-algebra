@@ -2,37 +2,43 @@
 
 You already have the certificate (`MyCertificate.c`), so you're 90% done!
 
-## Quick Install via CocoaPods (Recommended)
+## Manual Install (MyScript SDK not on CocoaPods)
 
-### Step 1: Install CocoaPods (one-time setup)
+### Step 1: Download SDK from MyScript
 
-```bash
-sudo gem install cocoapods
-```
+1. Go to https://developer.myscript.com/
+2. Sign in to your account
+3. Navigate to **Downloads** → **Interactive Ink SDK for iOS**
+4. Download version 2.1 or later
+5. Extract the downloaded ZIP file
 
-It will ask for your Mac password. This is safe - CocoaPods is the standard way to install iOS frameworks.
-
-### Step 2: Install MyScript SDK
-
-```bash
-cd /Users/hudsonmitchell-pullman/its-algebra
-pod install
-```
-
-This will:
-- Download the MyScript Interactive Ink SDK (v2.1)
-- Create an `its-algebra.xcworkspace` file
-- Set up everything automatically
-
-### Step 3: Open Workspace (NOT Project!)
-
-**IMPORTANT**: After running `pod install`, you must open the **.xcworkspace** file:
+### Step 2: Copy Framework to Project
 
 ```bash
-open its-algebra.xcworkspace
+# Create Frameworks directory if it doesn't exist
+mkdir -p /Users/hudsonmitchell-pullman/its-algebra/Frameworks
+
+# Copy the framework (adjust path to your Downloads folder)
+cp -R ~/Downloads/IInkSDK_*/iink.framework /Users/hudsonmitchell-pullman/its-algebra/Frameworks/
 ```
 
-**DO NOT** open the `.xcodeproj` file anymore - use `.xcworkspace` instead!
+### Step 3: Add Framework in Xcode
+
+```bash
+# Open the Xcode project
+open /Users/hudsonmitchell-pullman/its-algebra/config/its-algebra.xcodeproj
+```
+
+In Xcode:
+1. Select **its-algebra** project (top of navigator)
+2. Select **its-algebra** target
+3. Go to **General** tab
+4. Scroll to **Frameworks, Libraries, and Embedded Content**
+5. Click **+** button
+6. Click **Add Other...** → **Add Files...**
+7. Navigate to `/Users/hudsonmitchell-pullman/its-algebra/Frameworks/`
+8. Select **iink.framework**
+9. Set to **Embed & Sign**
 
 ### Step 4: Fix Signing
 
@@ -58,22 +64,22 @@ In Xcode:
 
 ## Troubleshooting
 
-### "Command not found: pod"
-Run Step 1 to install CocoaPods first.
-
-### "Framework not found" error after install
-Make sure you're opening `.xcworkspace` not `.xcodeproj`
+### "Framework not found" error
+1. Verify framework exists: `ls -la Frameworks/iink.framework`
+2. Make sure you added it in Xcode and set to "Embed & Sign"
+3. Clean build: Product → Clean Build Folder (Cmd+Shift+K)
 
 ### Still showing "SDK not initialized"
-1. Clean build: Product → Clean Build Folder (Cmd+Shift+K)
-2. Make sure you're opening the workspace file
-3. Check that `pod install` completed successfully
+1. Check certificate: `ls -la MyScriptCertificate/MyCertificate.c`
+2. Clean build folder (Cmd+Shift+K)
+3. Check Xcode build logs for framework loading errors
 
-## Alternative: Manual Download
-
-If CocoaPods doesn't work for some reason, see `MYSCRIPT_SETUP.md` for manual download instructions from developer.myscript.com.
+### Signing Error
+1. Select target → "Signing & Capabilities"
+2. Check "Automatically manage signing"
+3. Add your Apple ID in Xcode → Preferences → Accounts
 
 ---
 
-**You're almost there!** Just run those two commands and you'll have real handwriting recognition working! 🎉
+**Once you download and add the framework, you'll have real handwriting recognition!** 🎉
 

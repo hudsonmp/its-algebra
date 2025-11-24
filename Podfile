@@ -1,11 +1,11 @@
 # MyScript Interactive Ink SDK via CocoaPods
 platform :ios, '14.0'
 
-target 'its-algebra' do
-  use_frameworks!
+project 'config/its-algebra.xcodeproj'
 
+target 'its-algebra' do
   # MyScript Interactive Ink SDK
-  pod 'MyScriptInteractiveInk-Framework', '~> 2.1'
+  pod 'MyScriptInteractiveInk-Runtime', '4.2.1'
 end
 
 post_install do |installer|

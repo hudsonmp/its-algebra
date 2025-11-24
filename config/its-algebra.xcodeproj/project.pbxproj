@@ -7,31 +7,50 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		284710FB2ED3E8DE00624F3B /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284710FA2ED3E8DE00624F3B /* GeminiService.swift */; };
 		3E659801E06E437114FC0F43 /* LaTeXFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */; };
 		5AA420E239594E9BD17F11EC /* DrawingCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */; };
 		927AE2DC5AB9863DACAE3572 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5CC6702AC0CB269C2DD12B /* ContentView.swift */; };
 		B9B7BF0FFA74D8D94DB27DF8 /* its-algebraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8685256F779271D2DBC88160 /* its-algebraApp.swift */; };
-		F5AA53EAA90E056455250002 /* MyCertificate.c in Sources */ = {isa = PBXBuildFile; fileRef = ECCED37495C7C879A8535330 /* MyCertificate.c */; };
+		ED49D8CA9030064DD52E032F /* libPods-its-algebra.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D06434FA811D4298FF7EF6A /* libPods-its-algebra.a */; };
+		FDC6CA34ABAC472015680EF4 /* MyScriptWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C977FDAF07E9485E0245E /* MyScriptWrapper.mm */; };
 		FEE1795BA3421A02306BE421 /* MyScriptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7934EA66D77770A9836800D7 /* MyScriptManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A5C977FDAF07E9485E0245E /* MyScriptWrapper.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = MyScriptWrapper.mm; path = ../ios/MyScriptWrapper.mm; sourceTree = "<group>"; };
+		284710FA2ED3E8DE00624F3B /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
 		2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaTeXFormatter.swift; sourceTree = "<group>"; };
+		402314516ACFE306AEFD5C9C /* MyScriptWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyScriptWrapper.h; sourceTree = "<group>"; };
+		6B3A3F5EF6E60785447FE184 /* Pods-its-algebra.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-its-algebra.debug.xcconfig"; path = "Target Support Files/Pods-its-algebra/Pods-its-algebra.debug.xcconfig"; sourceTree = "<group>"; };
 		7934EA66D77770A9836800D7 /* MyScriptManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyScriptManager.swift; sourceTree = "<group>"; };
 		859EE8C70F092E4E59E1533C /* its-algebra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "its-algebra.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8685256F779271D2DBC88160 /* its-algebraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "its-algebraApp.swift"; sourceTree = "<group>"; };
+		9D06434FA811D4298FF7EF6A /* libPods-its-algebra.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-its-algebra.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingCanvasView.swift; sourceTree = "<group>"; };
 		BC5CC6702AC0CB269C2DD12B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		ECCED37495C7C879A8535330 /* MyCertificate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = MyCertificate.c; sourceTree = "<group>"; };
+		C7DED6A4EB0726B71E6D922B /* Pods-its-algebra.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-its-algebra.release.xcconfig"; path = "Target Support Files/Pods-its-algebra/Pods-its-algebra.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		380179E23118F23F9BE4CF61 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED49D8CA9030064DD52E032F /* libPods-its-algebra.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		06B99F925F0E10BD6938BE96 = {
 			isa = PBXGroup;
 			children = (
 				48ABB384DF02D64B72FFC5BF /* ios */,
-				A3CD128433991DB8F91FEC0C /* MyScriptCertificate */,
 				40D8E3B1CA21F4402E71E688 /* Products */,
+				A8F5846AA9650FC42E801AAE /* Pods */,
+				529AC5FF0875B658458096B0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -46,23 +65,35 @@
 		48ABB384DF02D64B72FFC5BF /* ios */ = {
 			isa = PBXGroup;
 			children = (
+				284710FA2ED3E8DE00624F3B /* GeminiService.swift */,
 				BC5CC6702AC0CB269C2DD12B /* ContentView.swift */,
 				9E6A01F5738E74A39498F8D0 /* DrawingCanvasView.swift */,
 				8685256F779271D2DBC88160 /* its-algebraApp.swift */,
 				2D0E6F78AE73922DA78DBA17 /* LaTeXFormatter.swift */,
 				7934EA66D77770A9836800D7 /* MyScriptManager.swift */,
+				402314516ACFE306AEFD5C9C /* MyScriptWrapper.h */,
+				0A5C977FDAF07E9485E0245E /* MyScriptWrapper.mm */,
 			);
 			name = ios;
 			path = ../ios;
 			sourceTree = "<group>";
 		};
-		A3CD128433991DB8F91FEC0C /* MyScriptCertificate */ = {
+		529AC5FF0875B658458096B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ECCED37495C7C879A8535330 /* MyCertificate.c */,
+				9D06434FA811D4298FF7EF6A /* libPods-its-algebra.a */,
 			);
-			name = MyScriptCertificate;
-			path = ../MyScriptCertificate;
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A8F5846AA9650FC42E801AAE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6B3A3F5EF6E60785447FE184 /* Pods-its-algebra.debug.xcconfig */,
+				C7DED6A4EB0726B71E6D922B /* Pods-its-algebra.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -72,15 +103,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 33352CA81B8EA86F327AAA72 /* Build configuration list for PBXNativeTarget "its-algebra" */;
 			buildPhases = (
+				72D25BE190FEB7C259A0C73C /* [CP] Check Pods Manifest.lock */,
 				A50A69C4AE115DF2CF478601 /* Sources */,
+				380179E23118F23F9BE4CF61 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "its-algebra";
-			packageProductDependencies = (
-			);
 			productName = "its-algebra";
 			productReference = 859EE8C70F092E4E59E1533C /* its-algebra.app */;
 			productType = "com.apple.product-type.application";
@@ -109,6 +140,7 @@
 			);
 			mainGroup = 06B99F925F0E10BD6938BE96;
 			minimizedProjectReferenceProxies = 1;
+			productRefGroup = 40D8E3B1CA21F4402E71E688 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -117,6 +149,31 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		72D25BE190FEB7C259A0C73C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-its-algebra-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A50A69C4AE115DF2CF478601 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -124,10 +181,11 @@
 			files = (
 				927AE2DC5AB9863DACAE3572 /* ContentView.swift in Sources */,
 				5AA420E239594E9BD17F11EC /* DrawingCanvasView.swift in Sources */,
+				284710FB2ED3E8DE00624F3B /* GeminiService.swift in Sources */,
 				3E659801E06E437114FC0F43 /* LaTeXFormatter.swift in Sources */,
-				F5AA53EAA90E056455250002 /* MyCertificate.c in Sources */,
 				FEE1795BA3421A02306BE421 /* MyScriptManager.swift in Sources */,
 				B9B7BF0FFA74D8D94DB27DF8 /* its-algebraApp.swift in Sources */,
+				FDC6CA34ABAC472015680EF4 /* MyScriptWrapper.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,30 +194,88 @@
 /* Begin XCBuildConfiguration section */
 		33CCC28B81B2B7B11233BBEB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C7DED6A4EB0726B71E6D922B /* Pods-its-algebra.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../Frameworks",
+					"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+					"$(PODS_ROOT)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/hudsonmitchell-pullman/its-algebra/Pods/MyScriptInteractiveInk-Runtime/include",
+					"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/include",
+					"$(inherited)",
+					"$(PODS_ROOT)/Headers/Public/MyScriptInteractiveInk-Runtime",
+				);
 				INFOPLIST_FILE = ../ios/Info.plist;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.itsalgebra.app;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = Release;
+			IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+			LIBRARY_SEARCH_PATHS = (
+				"$(inherited)",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScript2D.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptEngine.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMath.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptInk.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptAnalyzer.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptDocument.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptGesture.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMLOrt.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptShape.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptText.xcframework",
+			);
+			LD_RUNPATH_SEARCH_PATHS = (
+				"$(inherited)",
+				"@executable_path/Frameworks",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScript2D.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptEngine.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMath.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptInk.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptAnalyzer.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptDocument.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptGesture.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMLOrt.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptShape.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptText.xcframework",
+			);
+			OTHER_LDFLAGS = (
+				"$(inherited)",
+				"-liink",
+				"-lMyScript2D",
+				"-lMyScriptEngine",
+				"-lMyScriptMath",
+				"-lMyScriptInk",
+				"-lMyScriptAnalyzer",
+				"-lMyScriptDocument",
+				"-lMyScriptGesture",
+				"-lMyScriptMLOrt",
+				"-lMyScriptShape",
+				"-lMyScriptText",
+				"-framework",
+				"Foundation",
+				"-framework",
+				"UIKit",
+				"-framework",
+				"CoreGraphics",
+			);
+			PRODUCT_BUNDLE_IDENTIFIER = com.itsalgebra.app;
+			SDKROOT = iphoneos;
+			SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/../its-algebra-Bridging-Header.h";
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = 2;
+			USER_HEADER_SEARCH_PATHS = "$(inherited)";
+		};
+		name = Release;
 		};
 		3E60E2F9016E0E448C2D2DFA /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -219,31 +335,88 @@
 		};
 		9FF46298E578D64D271DD8AC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B3A3F5EF6E60785447FE184 /* Pods-its-algebra.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 255UFAZ5KH;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../Frameworks",
+					"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+					"$(PODS_ROOT)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/hudsonmitchell-pullman/its-algebra/Pods/MyScriptInteractiveInk-Runtime/include",
+					"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/include",
+					"$(inherited)",
+					"$(PODS_ROOT)/Headers/Public/MyScriptInteractiveInk-Runtime",
+				);
 				INFOPLIST_FILE = ../ios/Info.plist;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.itsalgebra.app;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = Debug;
+			IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+			LIBRARY_SEARCH_PATHS = (
+				"$(inherited)",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScript2D.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptEngine.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMath.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptInk.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptAnalyzer.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptDocument.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptGesture.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMLOrt.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptShape.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptText.xcframework",
+			);
+			LD_RUNPATH_SEARCH_PATHS = (
+				"$(inherited)",
+				"@executable_path/Frameworks",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libiink.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScript2D.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptEngine.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMath.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptInk.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptAnalyzer.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptDocument.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptGesture.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptMLOrt.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptShape.xcframework",
+				"$(PODS_ROOT)/MyScriptInteractiveInk-Runtime/libMyScriptText.xcframework",
+			);
+			OTHER_LDFLAGS = (
+				"$(inherited)",
+				"-liink",
+				"-lMyScript2D",
+				"-lMyScriptEngine",
+				"-lMyScriptMath",
+				"-lMyScriptInk",
+				"-lMyScriptAnalyzer",
+				"-lMyScriptDocument",
+				"-lMyScriptGesture",
+				"-lMyScriptMLOrt",
+				"-lMyScriptShape",
+				"-lMyScriptText",
+				"-framework",
+				"Foundation",
+				"-framework",
+				"UIKit",
+				"-framework",
+				"CoreGraphics",
+			);
+			PRODUCT_BUNDLE_IDENTIFIER = com.itsalgebra.app;
+			SDKROOT = iphoneos;
+			SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/../its-algebra-Bridging-Header.h";
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = 2;
+			USER_HEADER_SEARCH_PATHS = "$(inherited)";
+		};
+		name = Debug;
 		};
 		BA8C32818070917CAFEE83D2 /* Debug */ = {
 			isa = XCBuildConfiguration;

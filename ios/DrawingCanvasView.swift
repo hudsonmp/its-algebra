@@ -27,24 +27,53 @@ struct DrawingCanvasView: View {
     @State private var isFullscreen = false
     @State private var eraserMode: EraserMode = .object
     @State private var eraserSize: CGFloat = 20.0
+    @State private var currentProblem: String = "x - 7 + 3 = 5"
+    @State private var geminiFeedback: String = ""
+    @State private var geminiTimer: Timer?
     
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                // Recognized text display
-                if !recognizedText.isEmpty {
+                // Problem and feedback display
+                VStack(spacing: 8) {
+                    // Problem display
                     HStack {
-                        Text("Recognized: \(recognizedText)")
+                        Text("Problem: \(currentProblem)")
                             .font(.headline)
-                            .padding()
+                            .padding(.horizontal)
                         Spacer()
-                        Button("Clear") {
-                            recognizedText = ""
-                            MyScriptManager.shared.clear()
-                        }
-                        .padding()
                     }
-                    .background(Color.yellow.opacity(0.2))
+                    .background(Color.blue.opacity(0.1))
+                    
+                    // Recognized text display
+                    if !recognizedText.isEmpty {
+                        HStack {
+                            Text("Recognized: \(recognizedText)")
+                                .font(.subheadline)
+                                .padding(.horizontal)
+                            Spacer()
+                            Button("Clear") {
+                                recognizedText = ""
+                                latexOutput = ""
+                                geminiFeedback = ""
+                                MyScriptManager.shared.clear()
+                            }
+                            .padding(.horizontal)
+                        }
+                        .background(Color.yellow.opacity(0.2))
+                    }
+                    
+                    // Gemini feedback display
+                    if !geminiFeedback.isEmpty {
+                        HStack {
+                            Text("💡 Feedback: \(geminiFeedback)")
+                                .font(.subheadline)
+                                .foregroundColor(.green)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        .background(Color.green.opacity(0.1))
+                    }
                 }
                 
                 HStack(spacing: 0) {
@@ -57,7 +86,8 @@ struct DrawingCanvasView: View {
                         recognizedText: $recognizedText,
                         latexOutput: $latexOutput,
                         eraserMode: $eraserMode,
-                        eraserSize: $eraserSize
+                        eraserSize: $eraserSize,
+                        geminiFeedback: $geminiFeedback
                     )
                     .frame(width: geometry.size.width * 2/3)
                     
@@ -95,6 +125,50 @@ struct DrawingCanvasView: View {
                 isMyScriptInitialized = MyScriptManager.shared.initialize()
                 _ = MyScriptManager.shared.createTextEditor()
             }
+            
+            // Start Gemini feedback timer (every 5 seconds)
+            startGeminiFeedbackTimer()
+        }
+        .onDisappear {
+            // Stop timer when view disappears
+            geminiTimer?.invalidate()
+            geminiTimer = nil
+        }
+    }
+    
+    // MARK: - Gemini Feedback Timer
+    
+    private func startGeminiFeedbackTimer() {
+        // Cancel existing timer if any
+        geminiTimer?.invalidate()
+        
+        // Call immediately on start
+        fetchGeminiFeedback()
+        
+        // Set up timer to call every 5 seconds
+        geminiTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [self] _ in
+            fetchGeminiFeedback()
+        }
+    }
+    
+    private func fetchGeminiFeedback() {
+        // Only fetch feedback if there's recognized work
+        guard !recognizedText.isEmpty || !latexOutput.isEmpty else {
+            return
+        }
+        
+        Task {
+            let feedback = await GeminiService.shared.getFeedback(
+                problem: currentProblem,
+                studentWork: recognizedText,
+                latex: latexOutput
+            )
+            
+            await MainActor.run {
+                if let feedback = feedback {
+                    geminiFeedback = feedback
+                }
+            }
         }
     }
 }
@@ -110,6 +184,7 @@ struct StudentWorkArea: View {
     @Binding var latexOutput: String
     @Binding var eraserMode: EraserMode
     @Binding var eraserSize: CGFloat
+    @Binding var geminiFeedback: String
     
     var body: some View {
         GeometryReader { geometry in
@@ -125,8 +200,38 @@ struct StudentWorkArea: View {
                     latexOutput: $latexOutput,
                     eraserMode: $eraserMode,
                     eraserSize: $eraserSize,
+                    geminiFeedback: $geminiFeedback,
                     frame: CGRect(origin: .zero, size: geometry.size)
                 )
+                
+                // Render Gemini feedback overlay on canvas
+                if !geminiFeedback.isEmpty {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 8) {
+                                Text("💡 Feedback")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                Text(geminiFeedback)
+                                    .font(.subheadline)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.trailing)
+                                    .lineLimit(3)
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.green.opacity(0.9))
+                                    .shadow(radius: 4)
+                            )
+                            .padding(.trailing, 16)
+                            .padding(.bottom, 16)
+                        }
+                    }
+                }
             }
         }
     }
@@ -230,6 +335,7 @@ struct CanvasWrapper: UIViewRepresentable {
     @Binding var latexOutput: String
     @Binding var eraserMode: EraserMode
     @Binding var eraserSize: CGFloat
+    @Binding var geminiFeedback: String
     var frame: CGRect
     
     func makeCoordinator() -> Coordinator {
@@ -344,7 +450,9 @@ struct CanvasWrapper: UIViewRepresentable {
         }
         
         func scrollViewDidZoom(_ scrollView: UIScrollView) {
-            parent.zoomScale = scrollView.zoomScale
+            DispatchQueue.main.async {
+                self.parent.zoomScale = scrollView.zoomScale
+            }
             // Update content size to allow scrolling when zoomed
             if let canvas = canvas {
                 let frame = canvas.frame
@@ -404,14 +512,14 @@ struct CanvasWrapper: UIViewRepresentable {
             guard let recognizedText = MyScriptManager.shared.processDrawing(drawing) else {
                 // SDK not available or no recognition result
                 DispatchQueue.main.async {
-                    self.parent.recognizedText = "MyScript SDK not initialized"
+                    self.parent.recognizedText = ""
                     self.parent.latexOutput = ""
                 }
                 return
             }
             
-            // Convert to LaTeX format
-            let latex = LaTeXFormatter.shared.formatAsLaTeX(recognizedText)
+            // Get LaTeX output directly from MyScript
+            let latex = MyScriptManager.shared.getLatexOutput(from: drawing) ?? ""
             
             // Update recognized text and LaTeX output on main thread
             DispatchQueue.main.async {

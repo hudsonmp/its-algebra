@@ -14,6 +14,8 @@ targets:
       - path: ../ios
         includes:
           - "*.swift"
+          - "*.m"
+          - "*.h"
         excludes:
           - "*.md"
           - "*.html"
@@ -29,9 +31,6 @@ targets:
           - ".git/**"
           - "*.xcodeproj/**"
           - "*.xcworkspace/**"
-      - path: ../MyScriptCertificate
-        includes:
-          - "*.c"
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.itsalgebra.app
       TARGETED_DEVICE_FAMILY: "2"  # iPad only
@@ -41,9 +40,15 @@ targets:
       GENERATE_INFOPLIST_FILE: YES
       ENABLE_PREVIEWS: YES
       CODE_SIGN_STYLE: Automatic
+      CODE_SIGN_IDENTITY: "-"
+      DEVELOPMENT_TEAM: ""
       # Framework search paths - will be used when framework is manually added
       FRAMEWORK_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/../Frameworks"
       LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+      # Objective-C Bridging Header for MyScript SDK
+      SWIFT_OBJC_BRIDGING_HEADER: "$(PROJECT_DIR)/../its-algebra-Bridging-Header.h"
+      # Header search paths for MyScript SDK
+      HEADER_SEARCH_PATHS: "$(inherited) $(PODS_ROOT)/MyScriptInteractiveInk-Runtime/include"
     info:
       path: ../ios/Info.plist
       properties:
