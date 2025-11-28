@@ -1,28 +1,45 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Xcode
+*.xcodeproj
+*.xcworkspace
+.DS_Store
+*.swp
+*.swo
+*~
+.build/
 DerivedData/
-*.xcuserstate
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
 xcuserdata/
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
+*.xccheckout
+*.xcscmblueprint
 
-# Large data
-data/*.txt
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.resolved
 
-# Python/Backend
-__pycache__/
-*.py[cod]
-*.log
-server.log
-kcs.json
-feedback.json
-mistakes.json
+# CocoaPods
+Pods/
 
-# Helix source (don't add to Xcode)
-*.rs
-*.toml
-Cargo.lock
-docker-compose.yml
+# Carthage
+Carthage/Build/
 
-# Keep these
-!pyproject.toml
-!helix.toml
+# Secrets
+Config.plist
+Secrets.swift
+
+# MyScript Certificate (keep private)
+# MyCertificate.c is already in repo but should not be in public repos
+

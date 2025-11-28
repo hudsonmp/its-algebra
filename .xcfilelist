@@ -1,4 +1,0 @@
-# Only include Swift files in Xcode build
-*.swift
-Assets.xcassets
-Info.plist
