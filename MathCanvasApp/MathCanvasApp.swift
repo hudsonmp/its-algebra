@@ -24,7 +24,7 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 
                 VStack {
-                    LatexSidebar(latex: .init(
+                    LatexSidebar(latex: Binding(
                         get: { viewModel.currentLatex },
                         set: { viewModel.currentLatex = $0 }
                     ))
@@ -167,7 +167,10 @@ enum MathpixAPI {
     static func recognize(imageData: Data) async throws -> String {
         let base64 = imageData.base64EncodedString()
         
-        var request = URLRequest(url: URL(string: "https://api.mathpix.com/v3/text")!)
+        guard let url = URL(string: "https://api.mathpix.com/v3/text") else {
+            throw MathpixError.apiError(-1)
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 30
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
